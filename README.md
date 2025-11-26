@@ -2,14 +2,14 @@
 
 # 🗄️ FILEZ
 
-### **Encrypted File Sharing & Permissions — Powered by Fully Homomorphic Encryption**
+### **Private, Permissioned File Sharing — Enforced On-Chain With FHE**
 
-_A zero-trust file-sharing protocol where your files stay encrypted everywhere —  
-on your device, in storage, and even while the smart contract processes permissions._
+_FileZ lets you store, share, and manage files privately using fully homomorphic encryption._
+_Access rights are enforced on-chain using encrypted values, without revealing your file, metadata, or keys to anyone._
 
-_Powered by FHE so **only the intended user** can ever decrypt._
+**Only the intended recipient can ever decrypt.**
 
-**[🎥 Watch Full Demo Video](#)**
+**[🎥 Watch Full Demo Video](https://youtu.be/qcCBQ687Pk8)**
 
 </div>
 
@@ -44,54 +44,66 @@ This means:
 
 ---
 
-## Why FHE?
+### Why FileZ Matters
 
-FHE gives FILEZ a superpower:  
-**The contract can control access rights without ever knowing or decrypting the keys it manages.**
+Every decentralized storage system today has a fatal flaw:
 
-This solves the fundamental problem of Web3 storage:
+> **Files are encrypted, but permissions are not.**
 
-❌ “Private files” stored on IPFS aren’t private.  
-❌ dApps usually rely on backend servers to enforce access.  
-❌ Encryption keys are stored in plaintext off-chain.  
-❌ Sharing involves trusting some service with secrets.
+Access control is always off-chain, meaning someone must trust:
 
-✔ FILEZ stores all key material _encrypted_ using Zama’s FHEVM.  
-✔ Only authorized recipients can decrypt the key chunks required to unlock the file.  
-✔ The chain enforces access using encrypted values — **no plaintext ever appears anywhere**.
+- a backend
+- a gateway
+- a coordinator
+- or ACL logic in plaintext
 
-**This is the first truly trustless, chain-enforced private file-sharing system.**
+This breaks privacy.
+
+**FileZ eliminates trust entirely.**
+
+- Permissions are encrypted under FHE
+- Smart contracts validate access without seeing the data
+- Only the intended recipient can decrypt key material
+- No server, indexer, or chain node can read anything
+
+This is the **first true on-chain privacy-preserving file-sharing primitive**.
 
 ---
 
 ## 🧩 Core Components
 
-### 1. **Client (Next.js)**
+### 1. Client (Next.js)
 
-- Encrypts file using AES-GCM
-- Splits & encrypts AES key into 4 `euint64` chunks
-- Uploads encrypted file + metadata to storage
-- Registers file on-chain with encrypted key chunks
-- Shares encrypted key chunks with another user
+Handles all local cryptography:
 
-### 2. **Smart Contract (FHEVM + Solidity)**
+- AES encrypt file
+- Split + encrypt key into 4 × euint64
+- Upload encrypted file + metadata to IPFS
+- Call smart contract for registration / sharing
 
-- Stores:
-  - Encrypted file CID
-  - Encrypted metadata CID
-  - Encrypted per-user access key chunks
-- Enforces sharing rules (owner-only)
-- Rejects invalid ciphertexts
-- Never sees decrypted key material
+### 2. Smart Contract (FHEVM + Solidity)
 
-### 3. **Storage Layer (IPFS)**
+Maintains encrypted permission state:
 
-Encrypted file + encrypted metadata are stored off-chain.  
-Only pointers live on-chain.
+- Stores encrypted CIDs
+- Stores per-user encrypted key chunks
+- Enforces ownership & sharing rules
+- Never touches plaintext
 
-### 4. Indexing Layer (Subgraph / Event Indexer)
+### 3. Storage Layer (IPFS)
 
-A dedicated indexing layer listens to all on-chain events and builds a fast, queryable database for the UI and analytics.
+- Stores encrypted files
+- Stores encrypted metadata
+- No visibility into content
+
+### 4. Indexing Layer (Subgraph)
+
+- Indexes FileRegistered & FileShared events
+- Serves fast GraphQL queries for:
+  - My Files
+  - Shared With Me
+  - Pagination
+  - File metadata analytics
 
 ---
 
@@ -370,6 +382,17 @@ graph deploy --product hosted-service <subgraph-name>
 
 ---
 
+## 🧰 Tech Stack
+
+- **Frontend:** Next.js 14, Wagmi, RainbowKit, Framer Motion
+- **Crypto:** AES-GCM (file encryption), FHEVM (key encryption)
+- **Smart Contracts:** Solidity + Zama FHEVM
+- **Storage:** IPFS (web3.storage / Storacha)
+- **Indexing:** The Graph (Hosted Service)
+- **Testing:** Hardhat, Chai, Matchstick
+
+---
+
 ## 🧪 Test Coverage Summary
 
 #### ✔ Encrypted File Registration
@@ -407,12 +430,11 @@ graph deploy --product hosted-service <subgraph-name>
 
 ## 🎯 Future Work
 
-- **Encrypted file search** (keyword search on ciphertext)
-- **Encrypted metadata indexing** with FHE-powered filtering
-- **Team collaboration** (multiple recipients, groups)
-- **Revocation via re-keying**
-- **Distributed key splitting** (FHE × Shamir Secret Sharing)
-- **Hybrid L2 rollup integration** (FHE-native attestation rollup)
+- **Encrypted search:** Query encrypted file metadata without revealing keywords
+- **Group sharing:** Multi-user encrypted collaboration
+- **Re-keying system:** Allow revocation + key rotation without re-upload
+- **Encrypted thumbnails:** Share file previews securely
+- **FHE-enabled analytics:** Usage analytics computed on ciphertext
 
 ---
 
