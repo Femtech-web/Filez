@@ -45,7 +45,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://filez.xyz/",
+    url: "https://filez-cyan.vercel.app/",
     siteName: "FileZ",
     title: "FileZ — Fully Encrypted File Sharing Powered by FHE",
     description:
@@ -63,8 +63,8 @@ export const metadata: Metadata = {
 
   twitter: {
     card: "summary_large_image",
-    site: "@your_handle",
-    creator: "@your_handle",
+    site: "@DefiPreacherr",
+    creator: "@DefiPreacherr",
     title: "FileZ — Fully Encrypted On-Chain File Sharing",
     description:
       "FileZ lets you share files privately using end-to-end encryption and Zama FHEVM. True privacy. Zero trust.",
@@ -72,7 +72,7 @@ export const metadata: Metadata = {
   },
 
   alternates: {
-    canonical: "https://filez.xyz/",
+    canonical: "https://filez-cyan.vercel.app/",
   },
 
   category: "privacy tools",
