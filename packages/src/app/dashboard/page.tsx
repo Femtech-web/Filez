@@ -1,8 +1,7 @@
 import { Suspense } from "react";
 import DashboardPage from "./DashboardPage";
 
-export const dynamic = "force-dynamic"; // optional but useful
-
+export const dynamic = "force-dynamic";
 export default function Page() {
   return (
     <Suspense
