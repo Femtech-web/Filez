@@ -37,6 +37,7 @@ export const AnimatedButton = React.forwardRef<
     };
 
     return (
+      // @ts-expect-error - framer-motion drag event type conflict
       <motion.button
         ref={ref}
         whileHover={{
@@ -46,6 +47,7 @@ export const AnimatedButton = React.forwardRef<
         whileTap={{ scale: 0.95 }}
         className={cn(
           "relative overflow-hidden rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto",
+          // @ts-expect-error - framer-motion drag event type conflict
           variants[variant],
           sizes[size],
           className

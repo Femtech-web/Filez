@@ -13,6 +13,7 @@ interface AnimatedCardProps extends React.HTMLAttributes<HTMLDivElement> {
 export const AnimatedCard = React.forwardRef<HTMLDivElement, AnimatedCardProps>(
   ({ className, children, hover = true, glow = false, ...props }, ref) => {
     return (
+      // @ts-expect-error - framer-motion drag event type conflict
       <motion.div
         ref={ref}
         initial={{ opacity: 0, y: 20 }}
