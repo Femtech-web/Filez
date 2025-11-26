@@ -1,0 +1,38 @@
+
+÷ïdataSources:
+  - kind: ethereum
+    mapping:
+      abis:
+        - file:
+            /: /ipfs/QmQDHaqjCVuKhNB66M4fe7buw9aNaiKFsCYHtF7yXZ9xUu
+          name: FileRegistry
+      apiVersion: 0.0.7
+      entities:
+        - File
+        - Share
+      eventHandlers:
+        - event: >-
+            FileRegistered(indexed bytes32,indexed
+            address,bytes,bytes,bytes32[4],uint256)
+          handler: handleFileRegistered
+        - event: >-
+            FileShared(indexed bytes32,indexed address,indexed
+            address,bytes32[4],uint256)
+          handler: handleFileShared
+      file:
+        /: /ipfs/QmZjV1uqN3YkDjWi6hBh54r6efEPgUW667CuZbPmqCqreY
+      kind: ethereum/events
+      language: wasm/assemblyscript
+    name: FileRegistry
+    network: hardhat
+    source:
+      abi: FileRegistry
+      address: '0x5FbDB2315678afecb367f032d93F642f64180aa3'
+      startBlock: 1
+indexerHints:
+  prune: auto
+schema:
+  file:
+    /: /ipfs/QmfURf3DrHBCn6uU3prmsWzmVS2Y6bEmkNZdy7KZRqofV4
+specVersion: 1.0.0
+ï

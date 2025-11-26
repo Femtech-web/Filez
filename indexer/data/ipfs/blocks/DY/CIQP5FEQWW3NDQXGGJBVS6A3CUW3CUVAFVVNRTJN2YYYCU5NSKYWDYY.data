@@ -1,0 +1,20 @@
+
+ÎÆtype File @entity {
+  id: ID!
+  owner: Bytes!
+  cid: String!
+  metadataCid: String! # <--- NEW
+  ownerKeyChunks: [Bytes!]!
+  createdAt: BigInt!
+  sharedWith: [Share!]! @derivedFrom(field: "file")
+}
+
+type Share @entity {
+  id: ID!
+  file: File!
+  owner: Bytes!
+  recipient: Bytes!
+  keyChunks: [Bytes!]!
+  timestamp: BigInt!
+}
+Æ

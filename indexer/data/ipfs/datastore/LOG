@@ -1,0 +1,112 @@
+=============== Nov 24, 2025 (UTC) ===============
+20:06:44.453971 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+20:06:44.455598 db@open opening
+20:06:44.456923 version@stat F·[] S·0B[] Sc·[]
+20:06:44.460391 db@janitor F·2 G·0
+20:06:44.463533 db@open done T·7.86825ms
+20:06:44.544261 db@close closing
+20:06:44.544670 db@close done T·407.417µs
+=============== Nov 24, 2025 (UTC) ===============
+20:06:44.548395 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+20:06:44.550973 version@stat F·[] S·0B[] Sc·[]
+20:06:44.551114 db@open opening
+20:06:44.551625 journal@recovery F·1
+20:06:44.551835 journal@recovery recovering @1
+20:06:44.553967 memdb@flush created L0@2 N·12 S·1KiB "/pi..ZGE,v10":"/pr..crQ,v12"
+20:06:44.554469 version@stat F·[1] S·1KiB[1KiB] Sc·[0.25]
+20:06:44.556381 db@janitor F·3 G·0
+20:06:44.556442 db@open done T·5.247542ms
+20:06:44.561994 db@close closing
+20:06:44.562331 db@close done T·335.958µs
+=============== Nov 24, 2025 (UTC) ===============
+20:06:44.619060 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+20:06:44.622112 version@stat F·[1] S·1KiB[1KiB] Sc·[0.25]
+20:06:44.622438 db@open opening
+20:06:44.622722 journal@recovery F·1
+20:06:44.623097 journal@recovery recovering @3
+20:06:44.628304 memdb@flush created L0@5 N·6 S·1KiB "/F5..AGA,v19":"/pi..rty,v14"
+20:06:44.629047 version@stat F·[2] S·2KiB[2KiB] Sc·[0.50]
+20:06:44.635258 db@janitor F·4 G·0
+20:06:44.635312 db@open done T·12.823375ms
+20:06:44.643284 db@close closing
+20:06:44.643973 db@close done T·675.792µs
+=============== Nov 24, 2025 (UTC) ===============
+20:06:44.699932 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+20:06:44.701973 version@stat F·[2] S·2KiB[2KiB] Sc·[0.50]
+20:06:44.702097 db@open opening
+20:06:44.702615 journal@recovery F·1
+20:06:44.702793 journal@recovery recovering @6
+20:06:44.706947 version@stat F·[2] S·2KiB[2KiB] Sc·[0.50]
+20:06:44.712941 db@janitor F·4 G·0
+20:06:44.713025 db@open done T·10.729791ms
+20:06:44.718093 db@close closing
+20:06:44.718482 db@close done T·385.416µs
+=============== Nov 24, 2025 (UTC) ===============
+20:06:44.777312 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+20:06:44.778308 version@stat F·[2] S·2KiB[2KiB] Sc·[0.50]
+20:06:44.778393 db@open opening
+20:06:44.778655 journal@recovery F·1
+20:06:44.778876 journal@recovery recovering @8
+20:06:44.779833 version@stat F·[2] S·2KiB[2KiB] Sc·[0.50]
+20:06:44.784444 db@janitor F·4 G·0
+20:06:44.784502 db@open done T·6.0715ms
+20:12:56.875976 db@close closing
+20:12:56.877109 db@close done T·1.130083ms
+=============== Nov 24, 2025 (UTC) ===============
+20:13:35.294937 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+20:13:35.296507 version@stat F·[2] S·2KiB[2KiB] Sc·[0.50]
+20:13:35.296689 db@open opening
+20:13:35.297069 journal@recovery F·1
+20:13:35.297321 journal@recovery recovering @10
+20:13:35.298950 memdb@flush created L0@12 N·40 S·4KiB "/F5..AGA,v30":"/pr..ABQ,v32"
+20:13:35.299750 version@stat F·[3] S·7KiB[7KiB] Sc·[0.75]
+20:13:35.307665 db@janitor F·5 G·0
+20:13:35.307787 db@open done T·11.00225ms
+=============== Nov 25, 2025 (UTC) ===============
+02:03:48.135887 db@close closing
+02:03:48.140858 db@close done T·4.981791ms
+=============== Nov 25, 2025 (UTC) ===============
+09:20:43.311517 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+09:20:43.313570 version@stat F·[3] S·7KiB[7KiB] Sc·[0.75]
+09:20:43.313930 db@open opening
+09:20:43.318651 journal@recovery F·1
+09:20:43.322496 journal@recovery recovering @13
+09:20:43.330797 memdb@flush created L0@15 N·96 S·8KiB "/F5..AGA,v157":"/pr..ABQ,v129"
+09:20:43.331790 version@stat F·[4] S·16KiB[16KiB] Sc·[1.00]
+09:20:43.336401 db@janitor F·6 G·0
+09:20:43.336654 db@open done T·22.557792ms
+09:20:43.336721 table@compaction L0·4 -> L1·0 S·16KiB Q·158
+09:20:43.344549 table@build created L1@18 N·53 S·7KiB "/F5..AGA,v157":"/pr..ABQ,v129"
+09:20:43.344952 version@stat F·[0 1] S·7KiB[0B 7KiB] Sc·[0.00 0.00]
+09:20:43.346246 table@compaction committed F-3 S-8KiB Ke·0 D·101 T·8.492083ms
+09:20:43.346977 table@remove removed @15
+09:20:43.347725 table@remove removed @12
+09:20:43.348427 table@remove removed @5
+09:20:43.349047 table@remove removed @2
+11:40:06.419426 db@close closing
+11:40:06.421111 db@close done T·1.691375ms
+=============== Nov 25, 2025 (UTC) ===============
+11:41:57.279233 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:41:57.283973 version@stat F·[0 1] S·7KiB[0B 7KiB] Sc·[0.00 0.00]
+11:41:57.284453 db@open opening
+11:41:57.285559 journal@recovery F·1
+11:41:57.286439 journal@recovery recovering @16
+11:41:57.290406 memdb@flush created L0@19 N·34 S·5KiB "/F5..AGA,v160":"/pr..ABQ,v173"
+11:41:57.295327 version@stat F·[1 1] S·12KiB[5KiB 7KiB] Sc·[0.25 0.00]
+11:41:57.309618 db@janitor F·4 G·0
+11:41:57.309817 db@open done T·25.194083ms
+12:53:49.032181 db@close closing
+12:53:49.034207 db@close done T·2.008084ms
+=============== Nov 25, 2025 (UTC) ===============
+12:54:04.445641 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+12:54:04.447015 version@stat F·[1 1] S·12KiB[5KiB 7KiB] Sc·[0.25 0.00]
+12:54:04.447080 db@open opening
+12:54:04.447346 journal@recovery F·1
+12:54:04.447640 journal@recovery recovering @20
+12:54:04.449521 memdb@flush created L0@22 N·104 S·9KiB "/F5..AGA,v195":"/pr..ABQ,v231"
+12:54:04.451219 version@stat F·[2 1] S·21KiB[14KiB 7KiB] Sc·[0.50 0.00]
+12:54:04.457904 db@janitor F·5 G·0
+12:54:04.459103 db@open done T·11.965334ms
+=============== Nov 26, 2025 (UTC) ===============
+02:41:56.378936 db@close closing
+02:41:56.382560 db@close done T·4.236666ms
