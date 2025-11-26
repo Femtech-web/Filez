@@ -35,7 +35,8 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "scripts/deploy.js",
-    "src/types/**/*"
+    "src/types/**/*",
+    "src/types/framer-motion-patch"
   ],
   "exclude": ["node_modules"]
 }
