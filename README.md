@@ -25,7 +25,7 @@ FILEZ fixes that.
 
 ### What FILEZ enables
 
-- Upload a file (doc, audio, video etc) → client encrypts it → stores the encrypted file on IPFS (or any storage).
+- Upload a file (doc, audio, video etc) → client encrypts it → stores the encrypted file on IPFS.
 - Only store:
   - encrypted file CID
   - encrypted metadata CID
@@ -97,23 +97,23 @@ A dedicated indexing layer listens to all on-chain events and builds a fast, que
 
 ## 🛠️ Features
 
-### **End-to-End Encrypted File Storage**
+- ### **End-to-End Encrypted File Storage**
 
-Client encrypts files — not the smart contract.
+Client encrypts files, not the smart contract.
 
-### **Encrypted Access Control**
+- ### **Encrypted Access Control**
 
 AES key is split, encrypted as FHE `euint64` chunks, and stored on-chain.
 
-### **Per-Recipient Encrypted Key Distribution**
+- ### **Per-Recipient Encrypted Key Distribution**
 
 Each user gets their own encrypted key chunks.
 
-### **Encrypted Metadata**
+- ### **Encrypted Metadata**
 
-Even metadata (name, size, type) can be encrypted before uploading.
+Even metadata (name, size, type, etc) are encrypted before uploading.
 
-### **Zero-Knowledge Access Verification**
+- ### **Zero-Knowledge Access Verification**
 
 Unauthorized users cannot retrieve key chunks.
 
@@ -261,7 +261,7 @@ sequenceDiagram
 
 | Contract Name | Address                                    | Explorer Link                                                                                        |
 | ------------- | ------------------------------------------ | ---------------------------------------------------------------------------------------------------- |
-| FileRegistry  | 0x9Ad671c2FeF85479dFCf48B998f20ffF2E6625fE | [View on Etherscan](https://sepolia.etherscan.io/address/0x9Ad671c2FeF85479dFCf48B998f20ffF2E6625fE) |
+| FileRegistry  | 0x414117f52c51849B174545839780B85E672A1cdE | [View on Etherscan](https://sepolia.etherscan.io/address/0x414117f52c51849B174545839780B85E672A1cdE) |
 
 ---
 
@@ -274,6 +274,7 @@ Follow these steps to run, test, and develop **FileZ** locally using **Next.js, 
 ### ✅ 1. Install Dependencies
 
 ```bash
+cd packages
 npm install
 ```
 
@@ -317,12 +318,14 @@ npx hardhat node
 ### ✅ 4. Compile Contracts
 
 ```bash
+cd packages
 npx hardhat compile
 ```
 
 If using TypeChain:
 
 ```bash
+cd packages
 npx hardhat typechain
 ```
 
@@ -331,6 +334,7 @@ npx hardhat typechain
 ### ✅ 5. Run Tests (FHEVM-Based)
 
 ```bash
+cd packages
 npx hardhat test
 ```
 
@@ -339,6 +343,7 @@ npx hardhat test
 ### ✅ 6. Start the Frontend (Next.js)
 
 ```bash
+cd packages
 npm run dev
 ```
 
@@ -347,6 +352,8 @@ npm run dev
 If using The Graph locally:
 
 ```bash
+cd indexer
+docker compose up --build
 graph codegen
 graph build
 graph create filez
@@ -357,6 +364,7 @@ Or using Hosted Service:
 Deploy via:
 
 ```bash
+cd indexer
 graph deploy --product hosted-service <subgraph-name>
 ```
 
