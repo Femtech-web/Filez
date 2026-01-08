@@ -105,10 +105,10 @@ async function getWeb3Client(rpcUrl: string) {
 
 async function tryFetchFHEVMHardhatNodeRelayerMetadata(rpcUrl: string): Promise<
   | {
-      ACLAddress: `0x${string}`;
-      InputVerifierAddress: `0x${string}`;
-      KMSVerifierAddress: `0x${string}`;
-    }
+    ACLAddress: `0x${string}`;
+    InputVerifierAddress: `0x${string}`;
+    KMSVerifierAddress: `0x${string}`;
+  }
   | undefined
 > {
   const version = await getWeb3Client(rpcUrl);
@@ -184,9 +184,12 @@ async function resolve(
 ): Promise<ResolveResult> {
   // Resolve chainId
   const chainId = await getChainId(providerOrUrl);
+  console.log("chainid", chainId)
+  console.log("providerorrpc", providerOrUrl)
 
   // Resolve rpc url
   let rpcUrl = typeof providerOrUrl === "string" ? providerOrUrl : undefined;
+  console.log("rpcurl", rpcUrl)
 
   const _mockChains: Record<number, string> = {
     31337: "http://localhost:8545",

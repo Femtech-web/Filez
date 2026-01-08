@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { AnimatedButton } from "@/components/animated-button";
 import Link from "next/link";
 import { Lock, Shield, Upload, FileCheck, ArrowRight } from "lucide-react";
+import Image from "next/image";
 
 export default function Home() {
   return (
@@ -38,9 +39,8 @@ export default function Home() {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="flex flex-col sm:flex-row items-center justify-center mb-12 sm:mb-16 gap-4 sm:gap-6"
+            className="flex flex-col sm:flex-row items-center justify-center mb-12 sm:mb-16 "
           >
-            {/* Logo bubble */}
             <motion.div
               className="relative"
               whileHover={{ scale: 1.05 }}
@@ -58,7 +58,7 @@ export default function Home() {
                   ease: "easeInOut",
                 }}
               />
-              <div className="relative bg-white border border-border rounded-2xl p-6 sm:p-8 shadow-lg">
+              <div className="relative">
                 <motion.div
                   animate={{
                     rotate: [0, 5, -5, 0],
@@ -69,9 +69,12 @@ export default function Home() {
                     ease: "easeInOut",
                   }}
                 >
-                  <Lock
-                    className="w-12 h-12 sm:w-16 sm:h-16 text-primary"
-                    strokeWidth={1.5}
+                  <Image
+                    src="/filez-icon.png"
+                    alt="FileZ Logo"
+                    width={80}
+                    height={80}
+                    className="w-16 h-16 sm:w-20 sm:h-20"
                   />
                 </motion.div>
               </div>

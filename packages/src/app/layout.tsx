@@ -9,7 +9,9 @@ export const metadata: Metadata = {
   title: "FileZ — Fully Encrypted File Sharing Powered by FHE",
   description:
     "FileZ is a next-generation encrypted file sharing platform built on Zama FHEVM. Share files privately, control access with encrypted permissions, and keep data unreadable to everyone — including the blockchain.",
-
+  icons: {
+    apple: "/apple-touch-icon.png",
+  },
   keywords: [
     "FileZ",
     "encrypted file sharing",

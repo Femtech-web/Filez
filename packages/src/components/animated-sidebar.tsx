@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { useAccount } from "wagmi";
 import { useFhevmContext } from "@/providers/fhevmProvider";
+import Image from "next/image";
 
 interface SidebarItem {
   title: string;
@@ -85,17 +86,22 @@ export const AnimatedSidebar = ({
         >
           {!isCollapsed && (
             <motion.div
-              className="flex items-center gap-2"
+              className="flex items-center"
               initial={{ x: -8, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ duration: 0.18 }}
             >
               <motion.div
-                className="p-2 bg-primary/10 rounded-lg"
                 animate={{ rotate: [0, 5, -5, 0] }}
                 transition={{ duration: 4, repeat: Infinity }}
               >
-                <Lock className="w-6 h-6 text-primary" strokeWidth={1.5} />
+                <Image
+                  src="/filez-icon.png"
+                  alt="FileZ"
+                  width={40}
+                  height={40}
+                  className="w-10 h-10"
+                />
               </motion.div>
               <span className="text-2xl font-bold text-sidebar-foreground">
                 FileZ
