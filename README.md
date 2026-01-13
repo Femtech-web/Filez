@@ -443,5 +443,3 @@ graph deploy --product hosted-service <subgraph-name>
 MIT License — see **LICENSE** file.
 
 ---
-
-\*adding a small change\*\*
