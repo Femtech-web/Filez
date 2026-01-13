@@ -2,9 +2,17 @@
 
 import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Key, Send, CheckCircle2 } from "lucide-react";
-import { AnimatedButton } from "./animated-button";
-import { AnimatedInput } from "./animated-input";
+import {
+  X,
+  Key,
+  Send,
+  CheckCircle2,
+  Lock,
+  Loader2,
+  AlertCircle,
+  User,
+  Shield,
+} from "lucide-react";
 import { useFileRegistry } from "@/hooks/useFileRegistry";
 import { useAccount } from "wagmi";
 import { FILE_REGISTRY_ADDRESS } from "@/lib/constants";
@@ -18,7 +26,7 @@ interface ShareModalProps {
   ownerKeyChunks: string[];
 }
 
-type ShareStep = "input" | "encrypting" | "complete";
+type ShareStep = "input" | "encrypting" | "complete" | "error";
 
 export const ShareModal = ({
   isOpen,
@@ -30,42 +38,51 @@ export const ShareModal = ({
 }: ShareModalProps) => {
   const [recipientAddress, setRecipientAddress] = React.useState("");
   const [shareStep, setShareStep] = React.useState<ShareStep>("input");
+  const [errorMessage, setErrorMessage] = React.useState("");
 
   const { address } = useAccount();
   const { requestAccess, decryptKeyHandle, shareFile } = useFileRegistry(
     FILE_REGISTRY_ADDRESS
   );
 
+  const isValidAddress = recipientAddress.match(/^0x[a-fA-F0-9]{40}$/);
+
   const handleShare = async () => {
-    if (!recipientAddress) return;
+    if (!recipientAddress || !isValidAddress) return;
 
     try {
       setShareStep("encrypting");
+      setErrorMessage("");
+
       const isOwner = owner?.toLowerCase() === address?.toLowerCase();
 
       const encryptedChunks = isOwner
         ? ownerKeyChunks
-        : await requestAccess(fileId); // recipient re-sharing allowed
+        : await requestAccess(fileId);
 
       if (!encryptedChunks) throw new Error("Could not retrieve key chunks");
 
-      // Decrypt to AES key
       const symKey = await decryptKeyHandle(encryptedChunks);
       if (!symKey) throw new Error("Failed to decrypt AES key");
 
       await shareFile(fileId, recipientAddress, symKey);
 
       setShareStep("complete");
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      // Reset
-      setShareStep("input");
-      setRecipientAddress("");
-      onClose();
-    } catch (err) {
+      resetModal();
+    } catch (err: any) {
       console.error("Share failed:", err);
-      setShareStep("input");
+      setErrorMessage(err?.message || "Failed to share file");
+      setShareStep("error");
     }
+  };
+
+  const resetModal = () => {
+    setShareStep("input");
+    setRecipientAddress("");
+    setErrorMessage("");
+    onClose();
   };
 
   return (
@@ -77,179 +94,223 @@ export const ShareModal = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+            onClick={resetModal}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
           />
 
-          {/* Modal container */}
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+          {/* Modal */}
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-card border border-border rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto"
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-card border border-border rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
             >
               {/* Header */}
-              <div className="flex items-center justify-between p-4 sm:p-6 border-b border-border">
-                <h2 className="text-xl sm:text-2xl font-bold text-foreground">
-                  Share Privately
-                </h2>
-
-                <motion.button
-                  whileHover={{ scale: 1.1, rotate: 90 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={onClose}
+              <div className="flex items-center justify-between p-6 border-b border-border">
+                <div>
+                  <h2 className="text-xl font-semibold text-foreground">
+                    Share File
+                  </h2>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Private, encrypted sharing
+                  </p>
+                </div>
+                <button
+                  onClick={resetModal}
                   className="p-2 hover:bg-secondary rounded-lg transition-colors"
                 >
-                  <X className="w-5 h-5" />
-                </motion.button>
+                  <X className="w-5 h-5 text-muted-foreground" />
+                </button>
               </div>
 
               {/* Content */}
-              <div className="p-4 sm:p-6 space-y-6">
-                {shareStep === "input" ? (
-                  <>
+              <div className="p-6">
+                {shareStep === "input" && (
+                  <div className="space-y-6">
                     {/* File Info */}
-                    <div className="p-4 bg-secondary/50 rounded-xl border border-border">
-                      <p className="text-sm text-muted-foreground mb-1">
-                        Sharing file:
-                      </p>
-                      <p className="font-semibold text-foreground truncate break-all">
-                        {fileName}
-                      </p>
+                    <div className="flex items-center gap-3 p-4 bg-secondary/50 rounded-xl">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <Lock className="w-5 h-5 text-primary" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm text-muted-foreground">
+                          Sharing file
+                        </p>
+                        <p className="font-medium text-foreground truncate">
+                          {fileName}
+                        </p>
+                      </div>
                     </div>
 
                     {/* Recipient Input */}
-                    <AnimatedInput
-                      label="Recipient Wallet Address"
-                      placeholder="0x..."
-                      value={recipientAddress}
-                      onChange={(e) => setRecipientAddress(e.target.value)}
-                    />
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-2">
+                        Recipient Wallet Address
+                      </label>
+                      <div className="relative">
+                        <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <input
+                          type="text"
+                          value={recipientAddress}
+                          onChange={(e) => setRecipientAddress(e.target.value)}
+                          placeholder="0x..."
+                          className={`w-full pl-11 pr-4 py-3 bg-secondary border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-mono text-sm ${
+                            recipientAddress && !isValidAddress
+                              ? "border-destructive"
+                              : "border-border"
+                          }`}
+                        />
+                      </div>
+                      {recipientAddress && !isValidAddress && (
+                        <p className="text-xs text-destructive mt-2">
+                          Please enter a valid Ethereum address
+                        </p>
+                      )}
+                    </div>
 
-                    {/* Info box */}
-                    <div className="p-4 bg-primary/5 border border-primary/20 rounded-xl text-sm leading-relaxed">
-                      <p className="text-foreground">
-                        The encryption key will be re-encrypted for the
-                        recipient's wallet address. Only they will be able to
-                        decrypt and access this file.
-                      </p>
+                    {/* Info Banner */}
+                    <div className="flex items-start gap-3 p-4 bg-primary/5 border border-primary/20 rounded-xl">
+                      <Shield className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                      <div className="text-sm">
+                        <p className="font-medium text-foreground">
+                          End-to-end encrypted
+                        </p>
+                        <p className="text-muted-foreground">
+                          The decryption key will be re-encrypted for the
+                          recipient. Only they can access the file.
+                        </p>
+                      </div>
                     </div>
 
                     {/* Share Button */}
-                    <AnimatedButton
-                      variant="primary"
-                      size="lg"
-                      className="w-full"
+                    <motion.button
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
                       onClick={handleShare}
-                      disabled={
-                        !recipientAddress || !recipientAddress.startsWith("0x")
-                      }
+                      disabled={!isValidAddress}
+                      className="w-full py-3 bg-primary text-primary-foreground font-semibold rounded-xl hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                       <Send className="w-5 h-5" />
                       Share Privately
-                    </AnimatedButton>
-                  </>
-                ) : shareStep === "encrypting" ? (
-                  <div className="py-12">
-                    {/* Key Animation */}
-                    <div className="relative h-28 sm:h-32 mb-8">
-                      {/* Original key */}
+                    </motion.button>
+                  </div>
+                )}
+
+                {/* Encrypting State */}
+                {shareStep === "encrypting" && (
+                  <div className="py-12 text-center">
+                    <div className="relative w-24 h-24 mx-auto mb-6">
+                      {/* Animated key */}
                       <motion.div
-                        className="absolute left-1/2 top-0 -translate-x-1/2"
                         animate={{
-                          scale: [1, 1.2, 0.5],
-                          opacity: [1, 1, 0],
+                          scale: [1, 1.1, 1],
+                          rotate: [0, 180, 360],
                         }}
-                        transition={{ duration: 1.5 }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        }}
+                        className="absolute inset-0 flex items-center justify-center"
                       >
-                        <div className="p-4 bg-primary/10 rounded-xl border-2 border-primary">
-                          <Key
-                            className="w-6 h-6 sm:w-8 sm:h-8 text-primary"
-                            strokeWidth={1.5}
-                          />
+                        <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center">
+                          <Key className="w-8 h-8 text-primary" />
                         </div>
                       </motion.div>
 
-                      {/* Key fragments */}
-                      {[...Array(6)].map((_, i) => (
+                      {/* Orbiting particles */}
+                      {[0, 1, 2, 3].map((i) => (
                         <motion.div
                           key={i}
-                          className="absolute left-1/2 top-0 -translate-x-1/2"
-                          initial={{ scale: 0, opacity: 0 }}
                           animate={{
-                            x: Math.cos((i * Math.PI * 2) / 6) * 50,
-                            y: Math.sin((i * Math.PI * 2) / 6) * 50,
-                            scale: [0, 1, 1, 0],
-                            opacity: [0, 1, 1, 0],
-                            rotate: [0, 360],
+                            rotate: 360,
                           }}
                           transition={{
-                            duration: 2.5,
-                            delay: 0.5,
-                            times: [0, 0.2, 0.8, 1],
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: "linear",
+                            delay: i * 0.25,
                           }}
+                          className="absolute inset-0"
+                          style={{ transformOrigin: "center" }}
                         >
-                          <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-primary rounded-full" />
+                          <div
+                            className="absolute w-2 h-2 bg-primary rounded-full"
+                            style={{
+                              top: "50%",
+                              left: "0",
+                              transform: "translateY(-50%)",
+                            }}
+                          />
                         </motion.div>
                       ))}
-
-                      {/* Recombined key */}
-                      <motion.div
-                        className="absolute left-1/2 top-0 -translate-x-1/2"
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{
-                          scale: [0, 0, 1.2, 1],
-                          opacity: [0, 0, 1, 1],
-                        }}
-                        transition={{ duration: 2.5, delay: 1.5 }}
-                      >
-                        <div className="p-4 bg-green-500/10 rounded-xl border-2 border-green-500">
-                          <Key
-                            className="w-6 h-6 sm:w-8 sm:h-8 text-green-500"
-                            strokeWidth={1.5}
-                          />
-                        </div>
-                      </motion.div>
                     </div>
 
-                    {/* Status Text */}
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="text-center px-4"
-                    >
-                      <p className="font-semibold text-foreground mb-2">
-                        Re-encrypting key for recipient...
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Key splitting → recombining → sending securely
-                      </p>
-                    </motion.div>
+                    <h3 className="text-lg font-semibold text-foreground mb-2">
+                      Re-encrypting key...
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      Creating encrypted key shares for the recipient
+                    </p>
                   </div>
-                ) : (
-                  /* Success Screen */
+                )}
+
+                {/* Success State */}
+                {shareStep === "complete" && (
                   <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
+                    initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="text-center py-12 px-4"
+                    className="py-12 text-center"
                   >
                     <motion.div
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-                      transition={{ type: "spring", stiffness: 200 }}
-                      className="inline-block p-6 bg-green-500/10 rounded-full mb-4"
+                      transition={{
+                        type: "spring",
+                        stiffness: 200,
+                        delay: 0.1,
+                      }}
+                      className="w-20 h-20 mx-auto rounded-2xl bg-success/10 flex items-center justify-center mb-6"
                     >
-                      <CheckCircle2 className="w-14 h-14 sm:w-16 sm:h-16 text-green-500" />
+                      <CheckCircle2 className="w-10 h-10 text-success" />
                     </motion.div>
-
-                    <h3 className="text-xl sm:text-2xl font-bold text-foreground mb-2">
+                    <h3 className="text-xl font-semibold text-foreground mb-2">
                       Shared Successfully!
                     </h3>
-
-                    <p className="text-sm text-muted-foreground break-all">
-                      {recipientAddress} can now access this file
+                    <p className="text-sm text-muted-foreground">
+                      <code className="font-mono bg-secondary px-2 py-0.5 rounded">
+                        {recipientAddress.slice(0, 6)}...
+                        {recipientAddress.slice(-4)}
+                      </code>{" "}
+                      can now access this file
                     </p>
+                  </motion.div>
+                )}
+
+                {/* Error State */}
+                {shareStep === "error" && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="py-12 text-center"
+                  >
+                    <div className="w-20 h-20 mx-auto rounded-2xl bg-destructive/10 flex items-center justify-center mb-6">
+                      <AlertCircle className="w-10 h-10 text-destructive" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-foreground mb-2">
+                      Share Failed
+                    </h3>
+                    <p className="text-sm text-muted-foreground mb-6">
+                      {errorMessage ||
+                        "Something went wrong. Please try again."}
+                    </p>
+                    <button
+                      onClick={() => setShareStep("input")}
+                      className="px-6 py-2.5 bg-secondary text-foreground font-medium rounded-lg hover:bg-secondary/80 transition-colors"
+                    >
+                      Try Again
+                    </button>
                   </motion.div>
                 )}
               </div>
