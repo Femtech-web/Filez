@@ -219,7 +219,7 @@ function EncryptionVisual() {
       </svg>
 
       {/* Step indicator */}
-      <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 flex items-center gap-2">
+      <div className="absolute -bottom-32 left-1/2 -translate-x-1/2 flex items-center gap-2">
         {[0, 1, 2, 3].map((i) => (
           <div
             key={i}
@@ -239,7 +239,7 @@ function TestimonialCard() {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true }}
-      variants={scaleIn}
+      variants={scaleIn as any}
       className="relative"
     >
       {/* Quote mark */}
@@ -249,7 +249,7 @@ function TestimonialCard() {
 
       <div className="bg-card border border-border rounded-2xl p-8 relative overflow-hidden">
         {/* Subtle gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-br from-primary/5 to-transparent" />
 
         <div className="relative">
           {/* Quote */}
@@ -264,7 +264,7 @@ function TestimonialCard() {
 
           {/* Author */}
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-orange-600 flex items-center justify-center text-white font-bold text-lg">
+            <div className="w-12 h-12 rounded-full bg-linear-to-br from-primary to-orange-600 flex items-center justify-center text-white font-bold text-lg">
               R
             </div>
             <div>
@@ -455,7 +455,7 @@ export default function HomePage() {
               variants={staggerContainer}
             >
               {/* Badge */}
-              <motion.div variants={fadeInUp} className="mb-6">
+              <motion.div variants={fadeInUp as any} className="mb-6">
                 <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-sm">
                   <Sparkles className="w-4 h-4 text-primary" />
                   <span className="text-primary font-medium">
@@ -465,7 +465,10 @@ export default function HomePage() {
               </motion.div>
 
               {/* Headline */}
-              <motion.h1 variants={fadeInUp} className="text-display mb-6">
+              <motion.h1
+                variants={fadeInUp as any}
+                className="text-display mb-6"
+              >
                 The Only File Sharing Where{" "}
                 <span className="text-primary">Permissions</span> Are Encrypted
                 Too
@@ -473,7 +476,7 @@ export default function HomePage() {
 
               {/* Subheadline */}
               <motion.p
-                variants={fadeInUp}
+                variants={fadeInUp as any}
                 className="text-body-lg mb-8 max-w-xl"
               >
                 Most "private" storage encrypts your files but leaks who you
@@ -483,7 +486,7 @@ export default function HomePage() {
 
               {/* CTAs */}
               <motion.div
-                variants={fadeInUp}
+                variants={fadeInUp as any}
                 className="flex flex-wrap gap-4 mb-10"
               >
                 <Link href="/dashboard">
@@ -515,7 +518,7 @@ export default function HomePage() {
 
               {/* Trust badges */}
               <motion.div
-                variants={fadeInUp}
+                variants={fadeInUp as any}
                 className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground"
               >
                 <div className="flex items-center gap-2">
@@ -541,14 +544,14 @@ export default function HomePage() {
               className="relative hidden lg:block"
             >
               <div className="relative bg-card/50 border border-border rounded-2xl p-8 backdrop-blur-sm">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-2xl" />
+                <div className="absolute inset-0 bg-linear-to-br from-primary/5 to-transparent rounded-2xl" />
                 <div className="relative h-64 flex items-center justify-center">
                   <EncryptionVisual />
                 </div>
               </div>
 
               {/* Floating badge */}
-              <motion.div
+              {/* <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1 }}
@@ -556,7 +559,7 @@ export default function HomePage() {
               >
                 <Shield className="w-4 h-4" />
                 Zero Knowledge
-              </motion.div>
+              </motion.div> */}
             </motion.div>
           </div>
         </motion.div>
@@ -611,16 +614,19 @@ export default function HomePage() {
             className="text-center mb-16"
           >
             <motion.p
-              variants={fadeInUp}
+              variants={fadeInUp as any}
               className="text-sm text-primary font-medium mb-4"
             >
               THE PRIVACY PROBLEM
             </motion.p>
-            <motion.h2 variants={fadeInUp} className="text-headline mb-4">
+            <motion.h2
+              variants={fadeInUp as any}
+              className="text-headline mb-4"
+            >
               "Encrypted" Doesn't Mean Private
             </motion.h2>
             <motion.p
-              variants={fadeInUp}
+              variants={fadeInUp as any}
               className="text-body-lg max-w-2xl mx-auto"
             >
               Every decentralized storage solution encrypts files. But they all
@@ -656,7 +662,7 @@ export default function HomePage() {
                     key={i}
                     className="flex items-start gap-3 text-muted-foreground"
                   >
-                    <span className="w-5 h-5 rounded-full bg-red-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="w-5 h-5 rounded-full bg-red-500/20 flex items-center justify-center shrink-0 mt-0.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
                     </span>
                     {item}
@@ -690,7 +696,7 @@ export default function HomePage() {
                     key={i}
                     className="flex items-start gap-3 text-muted-foreground"
                   >
-                    <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                    <CheckCircle2 className="w-5 h-5 text-green-400 shrink-0 mt-0.5" />
                     {item}
                   </li>
                 ))}
@@ -713,16 +719,19 @@ export default function HomePage() {
             className="text-center mb-16"
           >
             <motion.p
-              variants={fadeInUp}
+              variants={fadeInUp as any}
               className="text-sm text-primary font-medium mb-4"
             >
               CORE FEATURES
             </motion.p>
-            <motion.h2 variants={fadeInUp} className="text-headline mb-4">
+            <motion.h2
+              variants={fadeInUp as any}
+              className="text-headline mb-4"
+            >
               Privacy That's Mathematically Proven
             </motion.h2>
             <motion.p
-              variants={fadeInUp}
+              variants={fadeInUp as any}
               className="text-body-lg max-w-2xl mx-auto"
             >
               Built on cryptographic primitives, not promises.
@@ -802,16 +811,19 @@ export default function HomePage() {
             className="text-center mb-16"
           >
             <motion.p
-              variants={fadeInUp}
+              variants={fadeInUp as any}
               className="text-sm text-primary font-medium mb-4"
             >
               USE CASES
             </motion.p>
-            <motion.h2 variants={fadeInUp} className="text-headline mb-4">
+            <motion.h2
+              variants={fadeInUp as any}
+              className="text-headline mb-4"
+            >
               Built for Sensitive Data
             </motion.h2>
             <motion.p
-              variants={fadeInUp}
+              variants={fadeInUp as any}
               className="text-body-lg max-w-2xl mx-auto"
             >
               Any industry that needs true privacy, not just compliance theater.
@@ -864,12 +876,15 @@ export default function HomePage() {
             className="text-center mb-16"
           >
             <motion.p
-              variants={fadeInUp}
+              variants={fadeInUp as any}
               className="text-sm text-primary font-medium mb-4"
             >
               HOW IT WORKS
             </motion.p>
-            <motion.h2 variants={fadeInUp} className="text-headline mb-4">
+            <motion.h2
+              variants={fadeInUp as any}
+              className="text-headline mb-4"
+            >
               Four Steps to True Privacy
             </motion.h2>
           </motion.div>
@@ -915,7 +930,7 @@ export default function HomePage() {
               >
                 {index < 3 && (
                   <div className="hidden md:block absolute top-12 left-[calc(100%+0.5rem)] w-[calc(100%-1rem)] h-px">
-                    <div className="w-full h-full bg-gradient-to-r from-border via-primary/30 to-border" />
+                    <div className="w-full h-full bg-linear-to-r from-border via-primary/30 to-border" />
                     <ChevronRight className="absolute -right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50" />
                   </div>
                 )}
@@ -1031,7 +1046,7 @@ export default function HomePage() {
             >
               {/* Security Architecture Visual */}
               <div className="rounded-2xl bg-card border border-border p-8 overflow-hidden relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-br from-primary/5 to-transparent" />
 
                 <div className="relative space-y-6">
                   <h3 className="text-lg font-semibold text-center mb-8">
@@ -1040,7 +1055,7 @@ export default function HomePage() {
 
                   {/* Layer 1 */}
                   <div className="flex items-center gap-4 p-4 bg-secondary/50 rounded-xl">
-                    <div className="w-12 h-12 rounded-lg bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                    <div className="w-12 h-12 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0">
                       <FileCheck className="w-6 h-6 text-blue-400" />
                     </div>
                     <div className="flex-1">
@@ -1054,12 +1069,12 @@ export default function HomePage() {
 
                   {/* Arrow */}
                   <div className="flex justify-center">
-                    <div className="w-px h-6 bg-gradient-to-b from-border to-primary/50" />
+                    <div className="w-px h-6 bg-linear-to-b from-border to-primary/50" />
                   </div>
 
                   {/* Layer 2 */}
                   <div className="flex items-center gap-4 p-4 bg-secondary/50 rounded-xl">
-                    <div className="w-12 h-12 rounded-lg bg-purple-500/10 flex items-center justify-center flex-shrink-0">
+                    <div className="w-12 h-12 rounded-lg bg-purple-500/10 flex items-center justify-center shrink-0">
                       <Key className="w-6 h-6 text-purple-400" />
                     </div>
                     <div className="flex-1">
@@ -1073,12 +1088,12 @@ export default function HomePage() {
 
                   {/* Arrow */}
                   <div className="flex justify-center">
-                    <div className="w-px h-6 bg-gradient-to-b from-primary/50 to-border" />
+                    <div className="w-px h-6 bg-linear-to-b from-primary/50 to-border" />
                   </div>
 
                   {/* Layer 3 */}
                   <div className="flex items-center gap-4 p-4 bg-secondary/50 rounded-xl">
-                    <div className="w-12 h-12 rounded-lg bg-orange-500/10 flex items-center justify-center flex-shrink-0">
+                    <div className="w-12 h-12 rounded-lg bg-orange-500/10 flex items-center justify-center shrink-0">
                       <Globe className="w-6 h-6 text-orange-400" />
                     </div>
                     <div className="flex-1">
@@ -1113,7 +1128,7 @@ export default function HomePage() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="relative rounded-3xl bg-gradient-to-br from-primary/20 via-primary/10 to-transparent border border-primary/20 p-12 md:p-16 text-center overflow-hidden"
+            className="relative rounded-3xl bg-linear-to-br from-primary/20 via-primary/10 to-transparent border border-primary/20 p-12 md:p-16 text-center overflow-hidden"
           >
             <div className="absolute inset-0 bg-gradient-radial opacity-50" />
 
