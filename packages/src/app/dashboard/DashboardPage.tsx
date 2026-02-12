@@ -29,7 +29,6 @@ import { UploadModal } from "@/components/upload-modal";
 import { WalletGuard } from "@/components/wallet-guard";
 import { DashboardSkeleton } from "@/components/skeleton/dashboardSkeleton";
 
-// File type icon mapping
 const getFileIcon = (type: string) => {
   if (type?.startsWith("image/")) return ImageIcon;
   if (type?.startsWith("video/")) return Film;
@@ -38,7 +37,6 @@ const getFileIcon = (type: string) => {
   return FileText;
 };
 
-// Animation variants
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {

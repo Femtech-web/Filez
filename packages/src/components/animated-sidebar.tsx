@@ -76,7 +76,7 @@ export const AnimatedSidebar = ({
       <div className="p-4 border-b border-sidebar-border">
         <div className="flex items-center justify-between">
           {!isCollapsed && (
-            <Link href="/" className="flex items-center gap-2">
+            <Link href="/" className="flex items-center">
               <Image
                 src="/filez-icon.png"
                 alt="FileZ"
@@ -295,7 +295,7 @@ export const AnimatedSidebar = ({
             FileZ
           </span>
         </Link>
-        <div className="w-9" /> {/* Spacer for centering */}
+        <div className="w-9" />
       </div>
 
       {/* Mobile Drawer */}
