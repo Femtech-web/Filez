@@ -2,31 +2,32 @@
 
 import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { cn } from "@/lib/utils";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useSearchParams } from "next/navigation";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import {
-  Lock,
   Files,
   Share2,
   ChevronLeft,
   ChevronRight,
-  Wallet,
   CheckCircle2,
   Loader2,
   AlertCircle,
   Menu,
   X,
+  Settings,
+  HelpCircle,
+  ExternalLink,
+  Zap,
 } from "lucide-react";
 import { useAccount } from "wagmi";
 import { useFhevmContext } from "@/providers/fhevmProvider";
-import Image from "next/image";
 
 interface SidebarItem {
   title: string;
   href: string;
-  icon: any;
+  icon: React.ElementType;
   tab: string;
 }
 
@@ -56,360 +57,273 @@ export const AnimatedSidebar = ({
   const searchParams = useSearchParams();
   const tab = searchParams?.get("tab") ?? "";
 
-  const { isConnected } = useAccount();
+  const { isConnected, address } = useAccount();
   const { status } = useFhevmContext();
 
-  // lock scroll while mobile drawer is open
+  // Lock scroll when mobile drawer is open
   React.useEffect(() => {
     if (mobileOpen) {
-      const prev = document.body.style.overflow;
       document.body.style.overflow = "hidden";
       return () => {
-        document.body.style.overflow = prev;
+        document.body.style.overflow = "";
       };
     }
   }, [mobileOpen]);
 
-  const renderSidebarContent = (closeMobile?: () => void) => {
-    return (
-      <motion.div
-        className="relative z-10 flex flex-col h-full p-4"
-        initial={{ opacity: 0, y: -8 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -8 }}
-      >
-        {/* Collapse button (desktop only) */}
-        <motion.div
-          className="flex items-center justify-between mb-8 pb-4 border-b border-sidebar-border"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
+  const renderContent = (closeMobile?: () => void) => (
+    <div className="flex flex-col h-full">
+      {/* Header */}
+      <div className="p-4 border-b border-sidebar-border">
+        <div className="flex items-center justify-between">
           {!isCollapsed && (
-            <motion.div
-              className="flex items-center"
-              initial={{ x: -8, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.18 }}
-            >
-              <motion.div
-                animate={{ rotate: [0, 5, -5, 0] }}
-                transition={{ duration: 4, repeat: Infinity }}
-              >
-                <Image
-                  src="/filez-icon.png"
-                  alt="FileZ"
-                  width={40}
-                  height={40}
-                  className="w-10 h-10"
-                />
-              </motion.div>
-              <span className="text-2xl font-bold text-sidebar-foreground">
+            <Link href="/" className="flex items-center">
+              <Image
+                src="/filez-icon.png"
+                alt="FileZ"
+                width={32}
+                height={32}
+                className="w-8 h-8"
+              />
+              <span className="text-lg font-bold text-sidebar-foreground">
                 FileZ
               </span>
-            </motion.div>
+            </Link>
           )}
 
-          <motion.div className="flex items-center gap-2">
-            <motion.button
-              onClick={() => setIsCollapsed((s) => !s)}
-              className="p-2 rounded-lg hover:bg-sidebar-accent transition-colors hidden lg:inline-flex"
-              aria-label="Collapse sidebar"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.96 }}
+          <div className="flex items-center gap-1">
+            {/* Desktop collapse button */}
+            <button
+              onClick={() => setIsCollapsed(!isCollapsed)}
+              className="hidden lg:flex p-2 hover:bg-sidebar-accent rounded-lg transition-colors"
+              aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
             >
               {isCollapsed ? (
-                <ChevronRight className="w-5 h-5 text-sidebar-foreground" />
+                <ChevronRight className="w-4 h-4 text-sidebar-foreground" />
               ) : (
-                <ChevronLeft className="w-5 h-5 text-sidebar-foreground" />
+                <ChevronLeft className="w-4 h-4 text-sidebar-foreground" />
               )}
-            </motion.button>
+            </button>
 
-            {/* mobile close X (renders inside drawer when mobile) */}
+            {/* Mobile close button */}
             {closeMobile && (
-              <motion.button
-                onClick={() => closeMobile()}
-                className="p-2 rounded-lg bg-sidebar-accent lg:hidden"
+              <button
+                onClick={closeMobile}
+                className="lg:hidden p-2 hover:bg-sidebar-accent rounded-lg transition-colors"
                 aria-label="Close menu"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.96 }}
               >
                 <X className="w-5 h-5 text-sidebar-foreground" />
-              </motion.button>
+              </button>
             )}
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
+      </div>
 
-        {/* Wallet panel */}
-        {!isCollapsed && (
-          <motion.div
-            className="mb-6 p-4 bg-sidebar-accent rounded-xl border border-sidebar-border"
-            initial={{ opacity: 0, y: -6 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.02 }}
-          >
-            <motion.div className="flex items-center gap-2 mb-3">
-              <Wallet className="w-4 h-4 text-primary" strokeWidth={1.5} />
-              <span className="text-xs font-semibold text-sidebar-foreground">
-                WALLET
-              </span>
-            </motion.div>
+      {/* Wallet Section */}
+      {!isCollapsed && (
+        <div className="p-4 border-b border-sidebar-border">
+          <ConnectButton.Custom>
+            {({
+              account,
+              chain,
+              openAccountModal,
+              openChainModal,
+              openConnectModal,
+              mounted,
+            }) => {
+              const ready = mounted;
+              const connected = ready && account && chain;
 
-            <ConnectButton.Custom>
-              {(props) => renderConnectUI(props)}
-            </ConnectButton.Custom>
-          </motion.div>
-        )}
-
-        {/* Nav items */}
-        <nav className="flex-1 space-y-2 overflow-y-auto">
-          {sidebarItems.map((item, idx) => {
-            const isActive =
-              pathname === item.href.split("?")[0] &&
-              ((item.tab === "" && !tab) || item.tab === tab);
-            const Icon = item.icon;
-
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => {
-                  if (closeMobile) closeMobile();
-                }}
-              >
-                <motion.div
-                  className={cn(
-                    "relative flex items-center gap-3 px-4 py-3 my-3 rounded-xl transition-all group",
-                    isActive
-                      ? "bg-primary text-white"
-                      : "text-sidebar-foreground hover:bg-sidebar-accent"
-                  )}
-                  initial={{ opacity: 0, x: -6 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: idx * 0.03 + 0.02 }}
-                  whileHover={{ x: 6 }}
-                >
-                  {isActive && (
-                    <motion.div
-                      className="absolute inset-0 bg-primary rounded-xl"
-                      layoutId="activeTab"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{
-                        type: "spring",
-                        stiffness: 500,
-                        damping: 30,
-                      }}
-                    />
-                  )}
-
-                  <motion.div
-                    className="relative z-10"
-                    initial={{ scale: 0.98 }}
-                    animate={{ scale: 1 }}
+              if (!connected) {
+                return (
+                  <button
+                    onClick={openConnectModal}
+                    className="w-full px-4 py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium rounded-lg transition-colors"
                   >
-                    <Icon className="w-5 h-5" strokeWidth={1.5} />
-                  </motion.div>
+                    Connect Wallet
+                  </button>
+                );
+              }
 
-                  {!isCollapsed && (
-                    <motion.span
-                      className="relative z-10 font-medium"
-                      initial={{ opacity: 0, x: -4 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.02 }}
-                    >
-                      {item.title}
-                    </motion.span>
-                  )}
-                </motion.div>
-              </Link>
-            );
-          })}
-        </nav>
+              if (chain?.unsupported) {
+                return (
+                  <button
+                    onClick={openChainModal}
+                    className="w-full px-4 py-2.5 bg-destructive hover:bg-destructive/90 text-white text-sm font-medium rounded-lg transition-colors"
+                  >
+                    Wrong Network
+                  </button>
+                );
+              }
 
-        {/* Status area */}
-        {!isCollapsed && (
-          <motion.div
-            className="pt-4 border-t border-sidebar-border space-y-3"
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <motion.div
-              className="flex items-center gap-2 px-4 py-2"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              return (
+                <div className="space-y-2">
+                  <button
+                    onClick={openChainModal}
+                    className="w-full px-3 py-2 bg-sidebar-accent hover:bg-sidebar-accent/80 text-sidebar-foreground text-sm font-medium rounded-lg transition-colors flex items-center gap-2"
+                  >
+                    <div className="w-2 h-2 rounded-full bg-success" />
+                    {chain?.name}
+                  </button>
+                  <button
+                    onClick={openAccountModal}
+                    className="w-full px-3 py-2 bg-sidebar-accent hover:bg-sidebar-accent/80 text-sidebar-foreground text-sm rounded-lg transition-colors font-mono truncate"
+                  >
+                    {account?.displayName}
+                  </button>
+                </div>
+              );
+            }}
+          </ConnectButton.Custom>
+        </div>
+      )}
+
+      {/* Navigation */}
+      <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+        {sidebarItems.map((item) => {
+          const isActive =
+            pathname === item.href.split("?")[0] &&
+            ((item.tab === "" && !tab) || item.tab === tab);
+          const Icon = item.icon;
+
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={() => closeMobile?.()}
             >
-              {isConnected ? (
-                <CheckCircle2 className="w-4 h-4 text-green-500" />
-              ) : (
-                <AlertCircle className="w-4 h-4 text-yellow-500" />
-              )}
-              <div>
-                <p className="text-xs font-medium text-sidebar-foreground">
-                  Wallet
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {isConnected ? "Connected" : "Not connected"}
-                </p>
+              <div
+                className={`relative flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
+                  isActive
+                    ? "bg-primary text-primary-foreground"
+                    : "text-sidebar-foreground hover:bg-sidebar-accent"
+                }`}
+              >
+                <Icon className="w-5 h-5 flex-shrink-0" />
+                {!isCollapsed && (
+                  <span className="font-medium text-sm">{item.title}</span>
+                )}
               </div>
-            </motion.div>
+            </Link>
+          );
+        })}
+      </nav>
 
-            <motion.div
-              className="flex items-center gap-2 px-4 py-2"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.03 }}
+      {/* Status Section */}
+      {!isCollapsed && (
+        <div className="p-4 border-t border-sidebar-border space-y-3">
+          {/* FHEVM Status */}
+          <div className="flex items-center gap-3 px-3 py-2 bg-sidebar-accent rounded-lg">
+            {status === "ready" && (
+              <CheckCircle2 className="w-4 h-4 text-success flex-shrink-0" />
+            )}
+            {status === "loading" && (
+              <Loader2 className="w-4 h-4 text-primary animate-spin flex-shrink-0" />
+            )}
+            {status === "error" && (
+              <AlertCircle className="w-4 h-4 text-destructive flex-shrink-0" />
+            )}
+            <div className="min-w-0">
+              <p className="text-xs font-medium text-sidebar-foreground">
+                FHEVM
+              </p>
+              <p className="text-[10px] text-muted-foreground capitalize">
+                {status}
+              </p>
+            </div>
+          </div>
+
+          {/* Links */}
+          <div className="space-y-1">
+            <a
+              href="https://docs.zama.ai/fhevm"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent rounded-lg transition-colors"
             >
-              {status === "ready" && (
-                <CheckCircle2 className="w-4 h-4 text-green-500" />
-              )}
-              {status === "loading" && (
-                <Loader2 className="w-4 h-4 text-primary animate-spin" />
-              )}
-              {status === "error" && (
-                <AlertCircle className="w-4 h-4 text-red-500" />
-              )}
+              <HelpCircle className="w-4 h-4" />
+              Documentation
+              <ExternalLink className="w-3 h-3 ml-auto" />
+            </a>
+          </div>
 
-              <div>
-                <p className="text-xs font-medium text-sidebar-foreground">
-                  FHEVM
-                </p>
-                <p className="text-xs text-muted-foreground capitalize">
-                  {status}
-                </p>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </motion.div>
-    );
-  };
+          {/* Powered by */}
+          <div className="pt-3 border-t border-sidebar-border">
+            <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+              <Zap className="w-3 h-3" />
+              Powered by Zama FHEVM
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 
-  //  Desktop sidebar
-  const DesktopSidebar = () => {
+  // Desktop Sidebar
+  if (variant === "desktop") {
     return (
       <aside
-        className="relative h-screen bg-sidebar border-r border-sidebar-border overflow-hidden flex-shrink-0 z-20"
-        style={{ width: isCollapsed ? 80 : 280 }}
-        aria-hidden={false}
+        className={`hidden lg:flex flex-col h-screen bg-sidebar border-r border-sidebar-border transition-all duration-200 ${
+          isCollapsed ? "w-16" : "w-64"
+        }`}
       >
-        {renderSidebarContent()}
+        {renderContent()}
       </aside>
     );
-  };
-
-  //  Mobile topbar + drawer
-  const MobileTopBar = ({ open }: { open: () => void }) => (
-    <div className="lg:hidden fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 py-3 bg-sidebar border-b border-sidebar-border">
-      <button
-        onClick={open}
-        className="p-2 rounded-lg bg-sidebar-accent"
-        aria-label="Open menu"
-      >
-        <Menu className="w-6 h-6 text-sidebar-foreground" />
-      </button>
-      <span className="text-xl font-bold text-sidebar-foreground">FileZ</span>
-    </div>
-  );
-
-  const MobileDrawer = () => {
-    return (
-      <>
-        <MobileTopBar open={() => setMobileOpen(true)} />
-
-        <AnimatePresence>
-          {mobileOpen && (
-            <>
-              {/* Backdrop */}
-              <motion.div
-                key="backdrop"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setMobileOpen(false)}
-                className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
-              />
-
-              {/* Drawer */}
-              <motion.aside
-                key="drawer"
-                initial={{ x: -320 }}
-                animate={{ x: 0 }}
-                exit={{ x: -320 }}
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                className="fixed top-0 left-0 h-screen w-72 bg-sidebar border-r border-sidebar-border z-50 overflow-y-auto"
-                aria-modal="true"
-                role="dialog"
-              >
-                {renderSidebarContent(() => setMobileOpen(false))}
-              </motion.aside>
-            </>
-          )}
-        </AnimatePresence>
-      </>
-    );
-  };
-
-  // Render variant
-  if (variant === "desktop") return <DesktopSidebar />;
-  return <MobileDrawer />;
-};
-
-function renderConnectUI({
-  account,
-  chain,
-  openAccountModal,
-  openChainModal,
-  openConnectModal,
-  mounted,
-}: any) {
-  const ready = mounted;
-  const connected = ready && account && chain;
-
-  if (!connected) {
-    return (
-      <motion.button
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        onClick={openConnectModal}
-        className="w-full px-4 py-2.5 bg-primary hover:bg-primary/90 text-white font-medium rounded-lg transition-colors"
-      >
-        Connect Wallet
-      </motion.button>
-    );
   }
 
-  if (chain?.unsupported) {
-    return (
-      <motion.button
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        onClick={openChainModal}
-        className="w-full px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors"
-      >
-        Wrong network
-      </motion.button>
-    );
-  }
-
+  // Mobile Sidebar
   return (
-    <div className="space-y-2">
-      <motion.button
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        onClick={openChainModal}
-        className="w-full px-3 py-2 bg-secondary hover:bg-secondary/80 text-foreground text-sm font-medium rounded-lg transition-colors flex items-center gap-2"
-      >
-        {chain?.name}
-      </motion.button>
+    <>
+      {/* Mobile Header Bar */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 py-3 bg-sidebar border-b border-sidebar-border">
+        <button
+          onClick={() => setMobileOpen(true)}
+          className="p-2 hover:bg-sidebar-accent rounded-lg transition-colors"
+          aria-label="Open menu"
+        >
+          <Menu className="w-5 h-5 text-sidebar-foreground" />
+        </button>
+        <Link href="/" className="flex items-center gap-2">
+          <Image
+            src="/filez-icon.png"
+            alt="FileZ"
+            width={28}
+            height={28}
+            className="w-7 h-7"
+          />
+          <span className="text-lg font-bold text-sidebar-foreground">
+            FileZ
+          </span>
+        </Link>
+        <div className="w-9" />
+      </div>
 
-      <motion.button
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        onClick={openAccountModal}
-        className="w-full px-3 py-2 bg-secondary hover:bg-secondary/80 text-foreground text-sm font-medium rounded-lg transition-colors"
-      >
-        {account?.displayName}
-      </motion.button>
-    </div>
+      {/* Mobile Drawer */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMobileOpen(false)}
+              className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+            />
+
+            {/* Drawer */}
+            <motion.aside
+              initial={{ x: -280 }}
+              animate={{ x: 0 }}
+              exit={{ x: -280 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="lg:hidden fixed top-0 left-0 h-full w-72 bg-sidebar border-r border-sidebar-border z-50 overflow-y-auto"
+            >
+              {renderContent(() => setMobileOpen(false))}
+            </motion.aside>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   );
-}
+};
