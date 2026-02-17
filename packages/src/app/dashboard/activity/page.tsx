@@ -70,11 +70,11 @@ export default function ActivityPage() {
         </header>
 
         {/* Content */}
-        <main className="p-6">
+        <main className="p-4 sm:p-6">
           <div className="max-w-7xl mx-auto">
-            <div className="grid lg:grid-cols-4 gap-6">
+            <div className="grid lg:grid-cols-4 gap-4 sm:gap-6">
               {/* Main Timeline */}
-              <div className="lg:col-span-3">
+              <div className="lg:col-span-3 order-2 lg:order-1">
                 <ActivityTimeline
                   events={events}
                   currentUserAddress={address}
@@ -86,7 +86,7 @@ export default function ActivityPage() {
               </div>
 
               {/* Sidebar Stats */}
-              <div className="space-y-6">
+              <div className="space-y-4 sm:space-y-6 order-1 lg:order-2">
                 {/* Global Stats */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}

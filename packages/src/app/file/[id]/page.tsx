@@ -1,7 +1,8 @@
 "use client";
 
 import { use, useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -14,6 +15,8 @@ import {
   Eye,
   MoreHorizontal,
   Pencil,
+  Trash2,
+  AlertTriangle,
 } from "lucide-react";
 import { useAccount } from "wagmi";
 import { useFileRegistry } from "@/hooks/useFileRegistry";
@@ -48,6 +51,7 @@ export default function FilePage({
   const [isExtendModalOpen, setIsExtendModalOpen] = useState(false);
   const [selectedShare, setSelectedShare] = useState<any>(null);
   const [revokingRecipient, setRevokingRecipient] = useState<string | null>(null);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
 
   const [metadata, setMetadata] = useState<any>(null);
   const [aesKey, setAesKey] = useState<Uint8Array | null>(null);
@@ -56,7 +60,8 @@ export default function FilePage({
   const [previewError, setPreviewError] = useState<string | null>(null);
 
   const { address } = useAccount();
-  const { decryptKeyHandles, requestAccess, downloadFile, revokeAccess, isRevoking } = useFileRegistry(
+  const router = useRouter();
+  const { decryptKeyHandles, requestAccess, downloadFile, revokeAccess, isRevoking, deleteFile, isDeleting } = useFileRegistry(
     FILE_REGISTRY_ADDRESS
   );
 
@@ -137,13 +142,13 @@ export default function FilePage({
 
   return (
     <WalletGuard>
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background overflow-x-hidden">
         {/* Header */}
         <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-xl border-b border-border">
-          <div className="px-6 py-4">
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <Link href="/dashboard">
+          <div className="px-4 sm:px-6 py-3 sm:py-4">
+            <div className="flex items-center justify-between gap-2 sm:gap-4">
+              <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
+                <Link href="/dashboard" className="flex-shrink-0">
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
@@ -153,8 +158,8 @@ export default function FilePage({
                   </motion.button>
                 </Link>
 
-                <div className="max-w-md">
-                  <h1 className="text-lg font-semibold text-foreground truncate">
+                <div className="min-w-0 flex-1">
+                  <h1 className="text-base sm:text-lg font-semibold text-foreground truncate">
                     {loadingMeta ? (
                       <span className="flex items-center gap-2">
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -165,11 +170,11 @@ export default function FilePage({
                     )}
                   </h1>
                   {!loadingMeta && metadata?.description ? (
-                    <p className="text-sm text-muted-foreground line-clamp-1">
+                    <p className="text-xs sm:text-sm text-muted-foreground line-clamp-1">
                       {metadata.description}
                     </p>
                   ) : (
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs sm:text-sm text-muted-foreground">
                       {loadingMeta
                         ? "Loading metadata..."
                         : metadata?.mimeType || "Unknown type"}
@@ -178,15 +183,26 @@ export default function FilePage({
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
                 {isOwner && (
                   <>
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
+                      onClick={() => setIsDeleteConfirmOpen(true)}
+                      disabled={isDeleting}
+                      className="flex items-center gap-1.5 px-2.5 sm:px-4 py-2 bg-red-500/10 text-red-400 font-medium rounded-lg hover:bg-red-500/20 transition-colors border border-red-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      <span className="hidden sm:inline">Delete</span>
+                    </motion.button>
+
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
                       onClick={() => setIsEditModalOpen(true)}
                       disabled={!aesKey || !metadata}
-                      className="flex items-center gap-2 px-4 py-2 bg-secondary text-foreground font-medium rounded-lg hover:bg-secondary/80 transition-colors border border-border disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex items-center gap-1.5 px-2.5 sm:px-4 py-2 bg-secondary text-foreground font-medium rounded-lg hover:bg-secondary/80 transition-colors border border-border disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Pencil className="w-4 h-4" />
                       <span className="hidden sm:inline">Edit</span>
@@ -196,7 +212,7 @@ export default function FilePage({
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => setIsShareModalOpen(true)}
-                      className="flex items-center gap-2 px-4 py-2 bg-secondary text-foreground font-medium rounded-lg hover:bg-secondary/80 transition-colors border border-border"
+                      className="flex items-center gap-1.5 px-2.5 sm:px-4 py-2 bg-secondary text-foreground font-medium rounded-lg hover:bg-secondary/80 transition-colors border border-border"
                     >
                       <Share2 className="w-4 h-4" />
                       <span className="hidden sm:inline">Share</span>
@@ -209,7 +225,7 @@ export default function FilePage({
                   whileTap={{ scale: 0.98 }}
                   onClick={handlePreview}
                   disabled={isDecrypting || !aesKey}
-                  className="flex items-center gap-2 px-4 py-2 bg-secondary text-foreground font-medium rounded-lg hover:bg-secondary/80 transition-colors border border-border disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="hidden sm:flex items-center gap-1.5 px-2.5 sm:px-4 py-2 bg-secondary text-foreground font-medium rounded-lg hover:bg-secondary/80 transition-colors border border-border disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Eye className="w-4 h-4" />
                   <span className="hidden sm:inline">Preview</span>
@@ -220,7 +236,7 @@ export default function FilePage({
                   whileTap={{ scale: 0.98 }}
                   onClick={handleDownload}
                   disabled={isDecrypting || !aesKey}
-                  className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center gap-1.5 px-2.5 sm:px-4 py-2 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isDecrypting ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -237,11 +253,11 @@ export default function FilePage({
         </header>
 
         {/* Content */}
-        <main className="p-6">
+        <main className="p-4 sm:p-6">
           <div className="max-w-6xl mx-auto">
-            <div className="grid lg:grid-cols-3 gap-6">
+            <div className="grid lg:grid-cols-3 gap-4 sm:gap-6">
               {/* Main Content */}
-              <div className="lg:col-span-2 space-y-6">
+              <div className="lg:col-span-2 space-y-4 sm:space-y-6 min-w-0">
                 {/* Preview Card */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -296,7 +312,7 @@ export default function FilePage({
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 }}
-                  className="bg-card border border-border rounded-2xl p-6"
+                  className="bg-card border border-border rounded-2xl p-4 sm:p-6 overflow-hidden"
                 >
                   <h2 className="text-lg font-semibold text-foreground mb-6 flex items-center gap-2">
                     <Shield className="w-5 h-5 text-primary" />
@@ -376,6 +392,78 @@ export default function FilePage({
           error={previewError}
           onDownload={handleDownload}
         />
+
+        {/* Delete Confirmation Modal */}
+        <AnimatePresence>
+          {isDeleteConfirmOpen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+              onClick={() => setIsDeleteConfirmOpen(false)}
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                onClick={(e) => e.stopPropagation()}
+                className="bg-card border border-border rounded-2xl p-6 w-full max-w-md shadow-xl"
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center flex-shrink-0">
+                    <AlertTriangle className="w-5 h-5 text-red-400" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-semibold text-foreground">Delete File</h2>
+                    <p className="text-sm text-muted-foreground">This action cannot be undone</p>
+                  </div>
+                </div>
+
+                <p className="text-sm text-muted-foreground mb-6">
+                  This will permanently delete{" "}
+                  <span className="font-medium text-foreground">
+                    {metadata?.originalName || "this file"}
+                  </span>{" "}
+                  from the registry. All active shares will be invalidated and the file will no longer be accessible.
+                </p>
+
+                <div className="flex items-center gap-3 justify-end">
+                  <button
+                    onClick={() => setIsDeleteConfirmOpen(false)}
+                    disabled={isDeleting}
+                    className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground bg-secondary hover:bg-secondary/80 rounded-lg transition-colors disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={async () => {
+                      const success = await deleteFile(file.id);
+                      if (success) {
+                        setIsDeleteConfirmOpen(false);
+                        router.push("/dashboard");
+                      }
+                    }}
+                    disabled={isDeleting}
+                    className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isDeleting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Deleting...
+                      </>
+                    ) : (
+                      <>
+                        <Trash2 className="w-4 h-4" />
+                        Delete File
+                      </>
+                    )}
+                  </button>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Extend Expiration Modal */}
         {selectedShare && (

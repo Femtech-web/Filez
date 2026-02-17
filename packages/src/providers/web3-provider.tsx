@@ -8,12 +8,12 @@ import {
 } from "@rainbow-me/rainbowkit";
 import { WagmiProvider } from "wagmi";
 import {
-  mainnet,
-  polygon,
-  optimism,
-  arbitrum,
-  base,
-  hardhat,
+  // mainnet,
+  // polygon,
+  // optimism,
+  // arbitrum,
+  // base,
+  // hardhat,
   sepolia,
 } from "wagmi/chains";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
@@ -21,7 +21,10 @@ import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 export const config = getDefaultConfig({
   appName: "Filez",
   projectId: "YOUR_PROJECT_ID",
-  chains: [mainnet, polygon, optimism, arbitrum, base, sepolia, hardhat],
+  chains: [
+    // mainnet, polygon, optimism, arbitrum, base, hardhat
+    sepolia,
+  ],
   ssr: false,
 });
 
@@ -37,6 +40,7 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
             accentColorForeground: "white",
             borderRadius: "medium",
           })}
+          initialChain={sepolia}
         >
           {children}
         </RainbowKitProvider>

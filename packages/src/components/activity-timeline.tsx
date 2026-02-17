@@ -226,9 +226,9 @@ function ActivityItem({
       
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <p className="text-sm text-foreground">{description}</p>
-        
-        <div className="flex items-center gap-4 mt-2">
+        <p className="text-sm text-foreground break-words">{description}</p>
+
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2">
           <span className="text-xs text-muted-foreground flex items-center gap-1">
             <Clock className="w-3 h-3" />
             {formatDistanceToNow(new Date(event.timestamp * 1000), { addSuffix: true })}

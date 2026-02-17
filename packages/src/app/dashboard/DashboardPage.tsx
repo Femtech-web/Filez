@@ -46,19 +46,19 @@ export default function DashboardPage() {
       <div className="min-h-screen bg-background">
         {/* Header */}
         <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-xl border-b border-border">
-          <div className="px-6 py-4">
-            <div className="flex items-center justify-between gap-4">
+          <div className="px-4 sm:px-6 py-3 sm:py-4">
+            <div className="flex items-center justify-between gap-2 sm:gap-4">
               {/* Title & Tabs */}
-              <div className="flex items-center gap-6">
-                <h1 className="text-xl font-semibold text-foreground hidden sm:block">
+              <div className="flex items-center gap-3 sm:gap-6 min-w-0">
+                <h1 className="text-xl font-semibold text-foreground hidden sm:block flex-shrink-0">
                   {tab === "shared" ? "Shared With Me" : "My Files"}
                 </h1>
 
                 {/* Tabs */}
-                <div className="flex items-center bg-secondary rounded-lg p-1">
-                  <Link href="/dashboard">
+                <div className="flex items-center bg-secondary rounded-lg p-1 overflow-x-auto max-w-[calc(100vw-8rem)] sm:max-w-none scrollbar-none">
+                  <Link href="/dashboard" className="flex-shrink-0">
                     <button
-                      className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
+                      className={`px-3 sm:px-4 py-2 text-sm font-medium rounded-md transition-all whitespace-nowrap ${
                         tab !== "shared" && tab !== "activity"
                           ? "bg-card text-foreground shadow-sm"
                           : "text-muted-foreground hover:text-foreground"
@@ -67,9 +67,9 @@ export default function DashboardPage() {
                       My Files
                     </button>
                   </Link>
-                  <Link href="/dashboard?tab=shared">
+                  <Link href="/dashboard?tab=shared" className="flex-shrink-0">
                     <button
-                      className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
+                      className={`px-3 sm:px-4 py-2 text-sm font-medium rounded-md transition-all whitespace-nowrap ${
                         tab === "shared"
                           ? "bg-card text-foreground shadow-sm"
                           : "text-muted-foreground hover:text-foreground"
@@ -78,9 +78,9 @@ export default function DashboardPage() {
                       Shared
                     </button>
                   </Link>
-                  <Link href="/dashboard/activity">
+                  <Link href="/dashboard/activity" className="flex-shrink-0">
                     <button
-                      className={`px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center gap-1.5 ${
+                      className={`px-3 sm:px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center gap-1.5 whitespace-nowrap ${
                         tab === "activity"
                           ? "bg-card text-foreground shadow-sm"
                           : "text-muted-foreground hover:text-foreground"
@@ -147,9 +147,9 @@ export default function DashboardPage() {
         </header>
 
         {/* Content */}
-        <main className="p-6">
+        <main className="p-4 sm:p-6">
           {/* Stats Bar */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
             {[
               {
                 label: "Total Files",

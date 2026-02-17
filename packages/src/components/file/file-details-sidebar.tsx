@@ -37,7 +37,7 @@ export function FileDetailsSidebar({ file, metadata }: FileDetailsSidebarProps) 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="bg-card border border-border rounded-2xl p-6"
+        className="bg-card border border-border rounded-2xl p-4 sm:p-6"
       >
         <h2 className="text-lg font-semibold text-foreground mb-4">
           File Details
@@ -96,7 +96,7 @@ export function FileDetailsSidebar({ file, metadata }: FileDetailsSidebarProps) 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="bg-card border border-border rounded-2xl p-6"
+        className="bg-card border border-border rounded-2xl p-4 sm:p-6"
       >
         <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
           <Database className="w-5 h-5 text-primary" />
@@ -107,8 +107,8 @@ export function FileDetailsSidebar({ file, metadata }: FileDetailsSidebarProps) 
           {/* File CID */}
           <div>
             <p className="text-xs text-muted-foreground mb-2">File CID</p>
-            <div className="flex items-center gap-2 p-3 bg-secondary/50 rounded-lg">
-              <code className="text-xs font-mono text-foreground truncate flex-1">
+            <div className="flex items-center gap-2 p-3 bg-secondary/50 rounded-lg overflow-hidden">
+              <code className="text-xs font-mono text-foreground truncate flex-1 min-w-0">
                 {file.cid}
               </code>
               <button
@@ -135,8 +135,8 @@ export function FileDetailsSidebar({ file, metadata }: FileDetailsSidebarProps) 
           {/* Metadata CID */}
           <div>
             <p className="text-xs text-muted-foreground mb-2">Metadata CID</p>
-            <div className="flex items-center gap-2 p-3 bg-secondary/50 rounded-lg">
-              <code className="text-xs font-mono text-foreground truncate flex-1">
+            <div className="flex items-center gap-2 p-3 bg-secondary/50 rounded-lg overflow-hidden">
+              <code className="text-xs font-mono text-foreground truncate flex-1 min-w-0">
                 {file.metadataCid}
               </code>
               <a

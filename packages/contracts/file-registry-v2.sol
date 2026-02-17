@@ -2,13 +2,11 @@
 pragma solidity ^0.8.24;
 
 import { FHE, euint64, externalEuint64 } from "@fhevm/solidity/lib/FHE.sol";
-import { SepoliaConfig } from "@fhevm/solidity/config/ZamaConfig.sol";
+import { ZamaEthereumConfig } from "@fhevm/solidity/config/ZamaConfig.sol";
 import { ReentrancyGuard } from  "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import "hardhat/console.sol";
-
 /**
- * @title FileRegistry V2 - Optimized
- * @author FileZ Team
+ * @title FileRegistry V2 
+ * @author FileZ 
  * @notice Privacy-preserving file registry with FHE-encrypted access control
  * @dev Optimizations:
  *  - Struct packing (uint256→uint32) saves ~40k gas per operation
@@ -21,7 +19,7 @@ import "hardhat/console.sol";
  * - Expiration checked at access time, not share time
  * - Soft-delete preserves audit trail
  */
-contract FileRegistryV2 is SepoliaConfig, ReentrancyGuard {
+contract FileRegistryV2 is ZamaEthereumConfig, ReentrancyGuard {
 
     /*//////////////////////////////////////////////////////////////
                                 CONSTANTS
@@ -37,7 +35,7 @@ contract FileRegistryV2 is SepoliaConfig, ReentrancyGuard {
                                 STRUCTS
     //////////////////////////////////////////////////////////////*/
 
-    /// @notice Core file record (OPTIMIZED: packed into 6 slots)
+    /// @notice Core file record 
     struct FileRecord {
         address owner;                // 20 bytes
         uint32 createdAt;             // 4 bytes  } Packed into slot 1
@@ -47,7 +45,7 @@ contract FileRegistryV2 is SepoliaConfig, ReentrancyGuard {
         bytes metadataCid;            // IPFS CID of encrypted metadata (dynamic)
     }
 
-    /// @notice Share record with expiration (OPTIMIZED: packed into 5 slots)
+    /// @notice Share record with expiration 
     struct ShareRecord {
         bytes32[4] keyChunks;         // FHE-encrypted key chunks (4 slots)
         uint32 sharedAt;              // 4 bytes  }
@@ -195,7 +193,6 @@ contract FileRegistryV2 is SepoliaConfig, ReentrancyGuard {
         externalEuint64 keyChunk3,
         bytes calldata inputProof
     ) external nonReentrant {
-        // Validation
         if (fileExists[fileId]) revert InvalidInput();
         if (cid.length == 0 || metadataCid.length == 0) revert InvalidInput();
 
@@ -219,7 +216,7 @@ contract FileRegistryV2 is SepoliaConfig, ReentrancyGuard {
             FHE.toBytes32(k3)
         ];
 
-        // Store file record (OPTIMIZED: uint32 timestamp)
+        // Store file record 
         files[fileId] = FileRecord({
             owner: msg.sender,
             cid: cid,
@@ -266,93 +263,51 @@ contract FileRegistryV2 is SepoliaConfig, ReentrancyGuard {
         externalEuint64 keyChunk3,
         bytes calldata inputProof
     ) external nonReentrant onlyFileOwner(fileId) fileActive(fileId) {
-        console.log("=== shareFile START ===");
-        console.log("FileID:", uint256(fileId));
-        console.log("Recipient:", recipient);
-        console.log("Sender:", msg.sender);
-        console.log("ExpiresAt:", expiresAt);
-
-        // Validation
-        console.log("Check 1: ZeroAddress");
         if (recipient == address(0)) revert ZeroAddress();
-
-        console.log("Check 2: SelfShare");
         if (recipient == msg.sender) revert SelfShare();
 
         // Check if already shared (and not revoked)
-        console.log("Check 3: AlreadyShared");
         ShareRecord storage existing = shares[fileId][recipient];
-        console.log("Existing keyChunks[0]:", uint256(existing.keyChunks[0]));
-        console.log("Existing isRevoked:", existing.isRevoked);
-
         bool hasExistingShare = existing.keyChunks[0] != bytes32(0);
-        console.log("Has existing share:", hasExistingShare);
 
         if (hasExistingShare && !existing.isRevoked) {
-            console.log("ERROR: Already shared and not revoked!");
             revert AlreadyShared();
         }
-        console.log("Check 3 PASSED: Not already shared OR is revoked");
 
         // Validate expiration if provided
-        console.log("Check 4: Expiration validation");
         if (expiresAt != 0) {
-            console.log("Block timestamp:", block.timestamp);
-            console.log("Expires at:", expiresAt);
-            console.log("Max allowed:", block.timestamp + MAX_EXPIRATION_DURATION);
-
-            if (expiresAt <= block.timestamp) {
-                console.log("ERROR: Expiration in the past!");
-                revert InvalidExpiration();
-            }
-            if (expiresAt > block.timestamp + MAX_EXPIRATION_DURATION) {
-                console.log("ERROR: Expiration too far in future!");
-                revert InvalidExpiration();
-            }
+            if (expiresAt <= block.timestamp) revert InvalidExpiration();
+            if (expiresAt > block.timestamp + MAX_EXPIRATION_DURATION) revert InvalidExpiration();
         }
-        console.log("Check 4 PASSED: Expiration valid");
 
         // Convert to encrypted internal types
-        console.log("Step 5: Converting FHE external to internal types");
         euint64 k0 = FHE.fromExternal(keyChunk0, inputProof);
-        console.log("k0 converted");
         euint64 k1 = FHE.fromExternal(keyChunk1, inputProof);
-        console.log("k1 converted");
         euint64 k2 = FHE.fromExternal(keyChunk2, inputProof);
-        console.log("k2 converted");
         euint64 k3 = FHE.fromExternal(keyChunk3, inputProof);
-        console.log("k3 converted");
 
         // Allow contract and recipient to access
-        console.log("Step 6: Setting FHE permissions");
         FHE.allowThis(k0);
         FHE.allowThis(k1);
         FHE.allowThis(k2);
         FHE.allowThis(k3);
-        console.log("allowThis complete");
 
         FHE.allow(k0, recipient);
         FHE.allow(k1, recipient);
         FHE.allow(k2, recipient);
         FHE.allow(k3, recipient);
-        console.log("allow recipient complete");
 
         // Store share record
-        console.log("Step 7: Converting to bytes32 for storage");
         bytes32[4] memory storedChunks = [
             FHE.toBytes32(k0),
             FHE.toBytes32(k1),
             FHE.toBytes32(k2),
             FHE.toBytes32(k3)
         ];
-        console.log("Stored chunk 0:", uint256(storedChunks[0]));
 
         // Initialize nonce (for race condition prevention)
-        console.log("Step 8: Setting up nonce");
         uint32 nonce = existing.keyChunks[0] == bytes32(0) ? 1 : existing.accessNonce + 1;
-        console.log("Nonce:", nonce);
 
-        console.log("Step 9: Storing ShareRecord");
         shares[fileId][recipient] = ShareRecord({
             keyChunks: storedChunks,
             sharedAt: uint32(block.timestamp),
@@ -362,9 +317,7 @@ contract FileRegistryV2 is SepoliaConfig, ReentrancyGuard {
         });
 
         validAccessNonce[fileId][recipient] = nonce;
-        console.log("ShareRecord stored successfully");
 
-        console.log("Step 10: Emitting event");
         emit FileShared(
             fileId,
             msg.sender,
@@ -373,7 +326,6 @@ contract FileRegistryV2 is SepoliaConfig, ReentrancyGuard {
             expiresAt,
             block.timestamp
         );
-        console.log("=== shareFile SUCCESS ===");
     }
 
     /**
@@ -394,8 +346,6 @@ contract FileRegistryV2 is SepoliaConfig, ReentrancyGuard {
 
         share.isRevoked = true;
         share.accessNonce++;  // Invalidate in-flight requestAccess() calls
-
-        // Don't update validAccessNonce - let it mismatch to trigger revert
 
         emit AccessRevoked(
             fileId,

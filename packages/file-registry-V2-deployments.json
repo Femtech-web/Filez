@@ -1,5 +1,5 @@
 {
-  "network": "localhost",
-  "FileRegistry": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-  "deployer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+  "network": "sepolia",
+  "FileRegistry": "0xD6DD4EB5E5982aee1Afcae36b6b9D33cb848bAa4",
+  "deployer": "0xcc886a72f79BaEd0098432704a65373F52131c54"
 }

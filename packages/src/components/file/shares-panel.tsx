@@ -73,7 +73,10 @@ export function SharesPanel({
                   <div className="flex items-center gap-2 mb-2">
                     <User className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                     <p className="font-mono text-sm text-foreground truncate">
-                      {share.recipient}
+                      <span className="sm:hidden">
+                        {share.recipient.slice(0, 8)}...{share.recipient.slice(-6)}
+                      </span>
+                      <span className="hidden sm:inline">{share.recipient}</span>
                     </p>
                   </div>
 
