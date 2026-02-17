@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
@@ -46,7 +47,7 @@ interface AnimatedSidebarProps {
   variant?: "desktop" | "mobile";
 }
 
-export const AnimatedSidebar = ({
+const AnimatedSidebarInner = ({
   defaultCollapsed = false,
   variant = "desktop",
 }: AnimatedSidebarProps) => {
@@ -327,3 +328,9 @@ export const AnimatedSidebar = ({
     </>
   );
 };
+
+export const AnimatedSidebar = (props: AnimatedSidebarProps) => (
+  <Suspense fallback={null}>
+    <AnimatedSidebarInner {...props} />
+  </Suspense>
+);
