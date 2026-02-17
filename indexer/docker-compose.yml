@@ -43,4 +43,4 @@ services:
       postgres_pass: postgres
       postgres_db: graph-node
       ipfs: "ipfs:5001"
-      ethereum: "hardhat:http://host.docker.internal:8545"
+      ethereum: "sepolia:http://host.docker.internal:8545"

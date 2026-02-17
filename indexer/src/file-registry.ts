@@ -70,7 +70,7 @@ export function handleFileRegistered(event: FileRegistered): void {
   file.cid = event.params.cid.toString();
   file.metadataCid = event.params.metadataCid.toString();
   file.ownerKeyChunks = changetype<Bytes[]>(event.params.ownerKeyChunks);
-  file.createdAt = event.params.timestamp; // ✅ Automatically converts uint32→BigInt
+  file.createdAt = event.params.timestamp;
   file.isDeleted = false;
   file.deletedAt = null;
   file.activeShareCount = 0;
@@ -91,7 +91,6 @@ export function handleFileRegistered(event: FileRegistered): void {
 }
 
 // Handler: FileShared
-// ✅ NO CHANGES NEEDED - Event signature unchanged
 export function handleFileShared(event: FileShared): void {
   let fileId = event.params.fileId.toHexString();
   let recipient = event.params.recipient;
@@ -101,7 +100,7 @@ export function handleFileShared(event: FileShared): void {
   let file = File.load(fileId);
   if (!file) return;
 
-  // Check if this is a re-share (previously revoked)
+  // Check if this is a re-share 
   let existingShare = Share.load(shareId);
   let isNewShare = existingShare == null || existingShare.isRevoked;
 
@@ -111,8 +110,8 @@ export function handleFileShared(event: FileShared): void {
   share.owner = event.params.owner;
   share.recipient = recipient;
   share.keyChunks = changetype<Bytes[]>(event.params.keyChunksForRecipient);
-  share.sharedAt = event.params.timestamp; // ✅ Automatically converts uint32→BigInt
-  share.expiresAt = event.params.expiresAt; // ✅ Automatically converts uint32→BigInt
+  share.sharedAt = event.params.timestamp;
+  share.expiresAt = event.params.expiresAt;
   share.isRevoked = false;
   share.revokedAt = null;
   share.isExpired = isShareExpired(event.params.expiresAt, event.block.timestamp);
@@ -197,7 +196,6 @@ export function handleFileAccessed(event: FileAccessed): void {
   let fileId = event.params.fileId.toHexString();
   let accessor = event.params.accessor;
 
-  // Load file
   let file = File.load(fileId);
   if (!file) return;
 
@@ -272,7 +270,7 @@ export function handleShareExtended(event: ShareExtended): void {
   let share = Share.load(shareId);
   if (!share) return;
 
-  share.expiresAt = event.params.newExpiresAt; // ✅ Automatically converts uint32→BigInt
+  share.expiresAt = event.params.newExpiresAt;
   share.isExpired = false; // Extension means it's no longer expired
   share.save();
 }

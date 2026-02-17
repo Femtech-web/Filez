@@ -4,7 +4,7 @@
 """
 Core file entity representing an encrypted file in the registry
 """
-type File @entity {
+type File @entity(immutable: false) {
   "Unique file identifier (bytes32 from contract)"
   id: ID!
 
@@ -45,7 +45,7 @@ type File @entity {
 """
 Share entity representing a file shared with a recipient
 """
-type Share @entity {
+type Share @entity(immutable: false) {
   "Composite ID: fileId-recipientAddress"
   id: ID!
 
@@ -89,7 +89,7 @@ type Share @entity {
 """
 Access event for audit trail
 """
-type AccessEvent @entity {
+type AccessEvent @entity(immutable: false) {
   "Unique event ID: txHash-logIndex"
   id: ID!
 
@@ -118,7 +118,7 @@ type AccessEvent @entity {
 """
 Revocation event for audit trail
 """
-type RevocationEvent @entity {
+type RevocationEvent @entity(immutable: false) {
   "Unique event ID: txHash-logIndex"
   id: ID!
 
@@ -144,7 +144,7 @@ type RevocationEvent @entity {
 """
 User entity for aggregated stats
 """
-type User @entity {
+type User @entity(immutable: false) {
   "User wallet address"
   id: ID!
 
@@ -164,7 +164,7 @@ type User @entity {
 """
 Global stats entity (singleton)
 """
-type GlobalStats @entity {
+type GlobalStats @entity(immutable: false) {
   "Always 'global'"
   id: ID!
 

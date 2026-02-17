@@ -7,13 +7,11 @@ indexerHints:
 dataSources:
   - kind: ethereum
     name: FileRegistryV2
-    network: hardhat
+    network: sepolia
     source:
-      # TODO: Update this address after deploying FileRegistryV2Optimized contract
-      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+      address: "0xD6DD4EB5E5982aee1Afcae36b6b9D33cb848bAa4"
       abi: FileRegistryV2
-      # TODO: Update startBlock to deployment block number
-      startBlock: 0
+      startBlock: 10278839
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -29,15 +27,12 @@ dataSources:
         - name: FileRegistryV2
           file: ./abis/FileRegistryV2.json
       eventHandlers:
-        # Core file operations
         - event: FileRegistered(indexed bytes32,indexed address,bytes,bytes,bytes32[4],uint256)
           handler: handleFileRegistered
 
-        # Sharing with expiration support (updated signature)
         - event: FileShared(indexed bytes32,indexed address,indexed address,bytes32[4],uint256,uint256)
           handler: handleFileShared
 
-        # New V2 events
         - event: AccessRevoked(indexed bytes32,indexed address,indexed address,uint256)
           handler: handleAccessRevoked
 
