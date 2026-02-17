@@ -28,7 +28,9 @@ export function FhevmProvider({
     provider,
     chainId: chainId,
     enabled: true,
-    initialMockChains: {},
+    initialMockChains: {
+      31337: "http://127.0.0.1:8545",
+    },
   });
 
   useEffect(() => {

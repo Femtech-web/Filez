@@ -85,8 +85,6 @@ export function useFhevm(parameters: {
     // is _providerRef.current valid here ?
     // even if the first useEffect is rendered in the same render-cycle ?
     if (_isRunning === false) {
-      // cancelled
-      console.log("cancelled");
       if (_abortControllerRef.current) {
         _abortControllerRef.current.abort();
         _abortControllerRef.current = null;

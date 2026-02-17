@@ -1,56 +1,28 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
   Upload,
   Lock,
-  ExternalLink,
   Shield,
   FileText,
-  Image as ImageIcon,
-  Film,
-  Music,
-  Archive,
-  MoreHorizontal,
   Grid3X3,
   List,
   Search,
-  Filter,
   Plus,
-  Clock,
   User,
   ChevronRight,
+  Activity,
 } from "lucide-react";
 import { useFilezSubgraph } from "@/hooks/useFilezSubgraph";
 import { UploadModal } from "@/components/upload-modal";
 import { WalletGuard } from "@/components/wallet-guard";
 import { DashboardSkeleton } from "@/components/skeleton/dashboardSkeleton";
-
-const getFileIcon = (type: string) => {
-  if (type?.startsWith("image/")) return ImageIcon;
-  if (type?.startsWith("video/")) return Film;
-  if (type?.startsWith("audio/")) return Music;
-  if (type?.includes("zip") || type?.includes("rar")) return Archive;
-  return FileText;
-};
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.05,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 10 },
-  visible: { opacity: 1, y: 0 },
-};
+import { FileGrid } from "@/components/dashboard/file-grid";
+import { FileList } from "@/components/dashboard/file-list";
 
 export default function DashboardPage() {
   const searchParams = useSearchParams();
@@ -87,7 +59,7 @@ export default function DashboardPage() {
                   <Link href="/dashboard">
                     <button
                       className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
-                        tab !== "shared"
+                        tab !== "shared" && tab !== "activity"
                           ? "bg-card text-foreground shadow-sm"
                           : "text-muted-foreground hover:text-foreground"
                       }`}
@@ -104,6 +76,18 @@ export default function DashboardPage() {
                       }`}
                     >
                       Shared
+                    </button>
+                  </Link>
+                  <Link href="/dashboard/activity">
+                    <button
+                      className={`px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center gap-1.5 ${
+                        tab === "activity"
+                          ? "bg-card text-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      <Activity className="w-3.5 h-3.5" />
+                      Activity
                     </button>
                   </Link>
                 </div>
@@ -248,137 +232,12 @@ export default function DashboardPage() {
 
           {/* File Grid */}
           {filteredFiles.length > 0 && viewMode === "grid" && (
-            <motion.div
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
-            >
-              {filteredFiles.map((file: any) => {
-                const FileIcon = getFileIcon(file.type);
-                return (
-                  <motion.div key={file.id} variants={itemVariants}>
-                    <Link
-                      href={
-                        tab === "shared"
-                          ? `/file/${file.fileId}`
-                          : `/file/${file.id}`
-                      }
-                    >
-                      <div className="group p-4 bg-card border border-border rounded-xl hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all duration-200 cursor-pointer">
-                        {/* Preview Area */}
-                        <div className="relative aspect-[4/3] rounded-lg bg-secondary mb-4 flex items-center justify-center overflow-hidden">
-                          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent" />
-                          <div className="relative p-4 bg-card/80 backdrop-blur-sm rounded-xl border border-border group-hover:scale-105 transition-transform">
-                            <FileIcon className="w-8 h-8 text-primary" />
-                          </div>
-
-                          {/* Encrypted indicator */}
-                          <div className="absolute top-2 right-2 p-1.5 bg-card/90 backdrop-blur-sm rounded-md border border-border">
-                            <Lock className="w-3 h-3 text-primary" />
-                          </div>
-                        </div>
-
-                        {/* File Info */}
-                        <div className="space-y-2">
-                          <div className="flex items-start justify-between gap-2">
-                            <h3 className="font-medium text-foreground truncate text-sm group-hover:text-primary transition-colors">
-                              {file.name}
-                            </h3>
-                            <button className="p-1 hover:bg-secondary rounded-md transition-colors opacity-0 group-hover:opacity-100">
-                              <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
-                            </button>
-                          </div>
-
-                          <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                            <span className="flex items-center gap-1">
-                              <Clock className="w-3 h-3" />
-                              {file.uploadedAt}
-                            </span>
-                            <span>{file.size}</span>
-                          </div>
-
-                          {/* Tags */}
-                          <div className="flex items-center gap-1.5 pt-1">
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-medium rounded-full">
-                              <Shield className="w-2.5 h-2.5" />
-                              FHE
-                            </span>
-                            <span className="inline-flex items-center px-2 py-0.5 bg-secondary text-muted-foreground text-[10px] font-medium rounded-full">
-                              IPFS
-                            </span>
-                            {tab === "shared" && (
-                              <span className="inline-flex items-center px-2 py-0.5 bg-blue-500/10 text-blue-400 text-[10px] font-medium rounded-full">
-                                Shared
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </Link>
-                  </motion.div>
-                );
-              })}
-            </motion.div>
+            <FileGrid files={filteredFiles} tab={tab} />
           )}
 
           {/* File List View */}
           {filteredFiles.length > 0 && viewMode === "list" && (
-            <motion.div
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-              className="bg-card border border-border rounded-xl overflow-hidden"
-            >
-              {/* Table Header */}
-              <div className="grid grid-cols-12 gap-4 px-4 py-3 bg-secondary/50 border-b border-border text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                <div className="col-span-5">Name</div>
-                <div className="col-span-2 hidden md:block">Size</div>
-                <div className="col-span-3 hidden sm:block">Modified</div>
-                <div className="col-span-2">Status</div>
-              </div>
-
-              {/* Table Body */}
-              <div className="divide-y divide-border">
-                {filteredFiles.map((file: any) => {
-                  const FileIcon = getFileIcon(file.type);
-                  return (
-                    <motion.div key={file.id} variants={itemVariants}>
-                      <Link
-                        href={
-                          tab === "shared"
-                            ? `/file/${file.fileId}`
-                            : `/file/${file.id}`
-                        }
-                      >
-                        <div className="grid grid-cols-12 gap-4 px-4 py-3 hover:bg-secondary/30 transition-colors cursor-pointer group">
-                          <div className="col-span-5 flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                              <FileIcon className="w-4 h-4 text-primary" />
-                            </div>
-                            <span className="font-medium text-foreground truncate text-sm group-hover:text-primary transition-colors">
-                              {file.name}
-                            </span>
-                          </div>
-                          <div className="col-span-2 hidden md:flex items-center text-sm text-muted-foreground">
-                            {file.size}
-                          </div>
-                          <div className="col-span-3 hidden sm:flex items-center text-sm text-muted-foreground">
-                            {file.uploadedAt}
-                          </div>
-                          <div className="col-span-2 flex items-center gap-2">
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-medium rounded-full">
-                              <Lock className="w-2.5 h-2.5" />
-                              Encrypted
-                            </span>
-                          </div>
-                        </div>
-                      </Link>
-                    </motion.div>
-                  );
-                })}
-              </div>
-            </motion.div>
+            <FileList files={filteredFiles} tab={tab} />
           )}
 
           {/* Pagination */}
