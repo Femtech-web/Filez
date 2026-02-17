@@ -1,18 +1,191 @@
-type File @entity {
+# FileZ Subgraph Schema V2
+# Supports: Files, Shares, Revocations, Expirations, Audit Trail
+
+"""
+Core file entity representing an encrypted file in the registry
+"""
+type File @entity(immutable: false) {
+  "Unique file identifier (bytes32 from contract)"
   id: ID!
+
+  "Owner's wallet address"
   owner: Bytes!
+
+  "IPFS CID of encrypted file content"
   cid: String!
-  metadataCid: String! # <--- NEW
+
+  "IPFS CID of encrypted metadata"
+  metadataCid: String!
+
+  "FHE-encrypted key chunks for owner"
   ownerKeyChunks: [Bytes!]!
+
+  "File creation timestamp"
   createdAt: BigInt!
-  sharedWith: [Share!]! @derivedFrom(field: "file")
+
+  "Soft deletion flag"
+  isDeleted: Boolean!
+
+  "Deletion timestamp (null if not deleted)"
+  deletedAt: BigInt
+
+  "All shares for this file"
+  shares: [Share!]! @derivedFrom(field: "file")
+
+  "All access events for this file"
+  accessEvents: [AccessEvent!]! @derivedFrom(field: "file")
+
+  "Count of active shares"
+  activeShareCount: Int!
+
+  "Count of total shares (including revoked)"
+  totalShareCount: Int!
 }
 
-type Share @entity {
+"""
+Share entity representing a file shared with a recipient
+"""
+type Share @entity(immutable: false) {
+  "Composite ID: fileId-recipientAddress"
   id: ID!
+
+  "Reference to the file"
   file: File!
+
+  "File owner address"
   owner: Bytes!
+
+  "Recipient address"
   recipient: Bytes!
+
+  "FHE-encrypted key chunks for recipient"
   keyChunks: [Bytes!]!
+
+  "Share creation timestamp"
+  sharedAt: BigInt!
+
+  "Expiration timestamp (0 = never expires)"
+  expiresAt: BigInt!
+
+  "Whether access has been revoked"
+  isRevoked: Boolean!
+
+  "Revocation timestamp (null if not revoked)"
+  revokedAt: BigInt
+
+  "Whether share is currently expired"
+  isExpired: Boolean!
+
+  "Access events for this share"
+  accessEvents: [AccessEvent!]! @derivedFrom(field: "share")
+
+  "Number of times accessed"
+  accessCount: Int!
+
+  "Last access timestamp"
+  lastAccessedAt: BigInt
+}
+
+"""
+Access event for audit trail
+"""
+type AccessEvent @entity(immutable: false) {
+  "Unique event ID: txHash-logIndex"
+  id: ID!
+
+  "Reference to the file"
+  file: File!
+
+  "Reference to the share (null if owner access)"
+  share: Share
+
+  "Address that accessed the file"
+  accessor: Bytes!
+
+  "Whether accessor is the owner"
+  isOwnerAccess: Boolean!
+
+  "Access timestamp"
   timestamp: BigInt!
+
+  "Transaction hash"
+  transactionHash: Bytes!
+
+  "Block number"
+  blockNumber: BigInt!
+}
+
+"""
+Revocation event for audit trail
+"""
+type RevocationEvent @entity(immutable: false) {
+  "Unique event ID: txHash-logIndex"
+  id: ID!
+
+  "Reference to the file"
+  file: File!
+
+  "Reference to the share"
+  share: Share!
+
+  "File owner who revoked"
+  owner: Bytes!
+
+  "Recipient whose access was revoked"
+  recipient: Bytes!
+
+  "Revocation timestamp"
+  timestamp: BigInt!
+
+  "Transaction hash"
+  transactionHash: Bytes!
+}
+
+"""
+User entity for aggregated stats
+"""
+type User @entity(immutable: false) {
+  "User wallet address"
+  id: ID!
+
+  "Count of files owned"
+  ownedFileCount: Int!
+
+  "Count of active shares received"
+  activeSharesReceived: Int!
+
+  "First interaction timestamp"
+  firstSeenAt: BigInt!
+
+  "Last interaction timestamp"
+  lastSeenAt: BigInt!
+}
+
+"""
+Global stats entity (singleton)
+"""
+type GlobalStats @entity(immutable: false) {
+  "Always 'global'"
+  id: ID!
+
+  "Total files registered"
+  totalFiles: BigInt!
+
+  "Total active files (not deleted)"
+  activeFiles: BigInt!
+
+  "Total shares created"
+  totalShares: BigInt!
+
+  "Total active shares"
+  activeShares: BigInt!
+
+  "Total revocations"
+  totalRevocations: BigInt!
+
+  "Total unique users"
+  totalUsers: BigInt!
+
+  "Last updated timestamp"
+  lastUpdatedAt: BigInt!
 }

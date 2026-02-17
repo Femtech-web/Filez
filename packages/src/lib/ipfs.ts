@@ -30,7 +30,6 @@ export async function uploadToIPFS(data: File) {
 
     return cid;
   } catch (err) {
-    console.error("Storacha upload failed", err);
     throw err;
   }
 }
@@ -45,7 +44,6 @@ export async function downloadFromIPFS(cid: string): Promise<ArrayBuffer> {
     const blob = await res.blob();
     return await blob.arrayBuffer();
   } catch (err) {
-    console.error("❌ downloadFromIPFS failed:", err);
     throw err;
   }
 }

@@ -6,12 +6,12 @@ indexerHints:
 
 dataSources:
   - kind: ethereum
-    name: FileRegistry
+    name: FileRegistryV2
     network: sepolia
     source:
-      address: "0x414117f52c51849B174545839780B85E672A1cdE"
-      abi: FileRegistry
-      startBlock: 9025909
+      address: "0xD6DD4EB5E5982aee1Afcae36b6b9D33cb848bAa4"
+      abi: FileRegistryV2
+      startBlock: 10278839
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -19,12 +19,32 @@ dataSources:
       entities:
         - File
         - Share
+        - AccessEvent
+        - RevocationEvent
+        - User
+        - GlobalStats
       abis:
-        - name: FileRegistry
-          file: ./abis/FileRegistry.json
+        - name: FileRegistryV2
+          file: ./abis/FileRegistryV2.json
       eventHandlers:
         - event: FileRegistered(indexed bytes32,indexed address,bytes,bytes,bytes32[4],uint256)
           handler: handleFileRegistered
-        - event: FileShared(indexed bytes32,indexed address,indexed address,bytes32[4],uint256)
+
+        - event: FileShared(indexed bytes32,indexed address,indexed address,bytes32[4],uint256,uint256)
           handler: handleFileShared
+
+        - event: AccessRevoked(indexed bytes32,indexed address,indexed address,uint256)
+          handler: handleAccessRevoked
+
+        - event: FileAccessed(indexed bytes32,indexed address,uint256)
+          handler: handleFileAccessed
+
+        - event: FileDeleted(indexed bytes32,indexed address,uint256)
+          handler: handleFileDeleted
+
+        - event: MetadataUpdated(indexed bytes32,bytes,uint256)
+          handler: handleMetadataUpdated
+
+        - event: ShareExtended(indexed bytes32,indexed address,uint256,uint256,uint256)
+          handler: handleShareExtended
       file: ./src/file-registry.ts

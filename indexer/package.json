@@ -7,7 +7,10 @@
     "deploy": "graph deploy --studio filez",
     "create-local": "graph create --node http://localhost:8020/ filez",
     "remove-local": "graph remove --node http://localhost:8020/ filez",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 filez"
+    "create-local-v2": "graph create --node http://localhost:8020/ filez-v2",
+    "remove-local-v2": "graph remove --node http://localhost:8020/ filez-v2",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 filez",
+    "deploy-local-v2": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 filez-v2"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.86.0",
